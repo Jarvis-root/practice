@@ -1,6 +1,6 @@
 # from typing import Any
 
-import MySQLdb
+import pymysql
 import random, time
 
 
@@ -16,7 +16,7 @@ class Database(object):
         :param charset:
         """
         try:
-            self.con = MySQLdb.connect(
+            self.con = pymysql.connect(
                 host=host,
                 user=user,
                 password=password,
@@ -73,9 +73,13 @@ class Database(object):
 
 
 if __name__ == '__main__':
-    s = "SELECT * FROM `account`;"
-    a = Database('192.168.1.4', 'root', '123456', 'test')
-
+    s = "SELECT * FROM `student`;"
+    a = Database('192.168.1.5', 'liudong', '123456', 'test')
+    # cur = a.execute_sql(s)
+    # ret = cur.fetchall()
+    cur = a.execute_sql("INSERT INTO test.student (student_id, name, sex, age) VALUES('s_04', 'liudong1', 'male', '25');")
+    a.con.commit()
+    # print(ret)
     #  使用cursor.execute插入，比executemany慢很多
     # t3 = time.time()
     # i = 0
@@ -93,14 +97,14 @@ if __name__ == '__main__':
     # print(t4 - t3)
 
     # 使用cursor.executemany 插入,executemany比execute快多了，executemany只用2秒左右就插完9万条，execute用了90多秒
-    dml = "INSERT INTO `account`(`id`, `Name`, `Sex`, `Money`, `Account`) VALUES (%s, %s, %s, %s, %s);"
-    t1 = time.time()
-    count = a.insert_many(dml, [(id, random.choice(['王上', '赵小康', '李小强', 'Shaw', 'Mark', 'shabi', 'Python']),
-                         random.choice(['男', '女']), random.uniform(1, 1000), random.randint(123456789, 999999999))
-                        for id in range(9999, 99999)])
-
-    a.con.commit()
-    t2 = time.time()
-    print(count)
-    a.close_connect()
-    print(t2 -t1)
+    # dml = "INSERT INTO `account`(`id`, `Name`, `Sex`, `Money`, `Account`) VALUES (%s, %s, %s, %s, %s);"
+    # t1 = time.time()
+    # count = a.insert_many(dml, [(id, random.choice(['王上', '赵小康', '李小强', 'Shaw', 'Mark', 'shabi', 'Python']),
+    #                      random.choice(['男', '女']), random.uniform(1, 1000), random.randint(123456789, 999999999))
+    #                     for id in range(9999, 99999)])
+    #
+    # a.con.commit()
+    # t2 = time.time()
+    # print(count)
+    # a.close_connect()
+    # print(t2 -t1)
