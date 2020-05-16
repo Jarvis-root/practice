@@ -1,6 +1,6 @@
-from hashlib import md5
 import math
 import random
+from hashlib import md5
 from time import time
 
 import requests
@@ -55,13 +55,23 @@ def get_result(url, data, headers, method='post'):
         return response.json()
 
 
-def translate(words: str):
+def generate_result_dict(words: str):
     sign = make_sign(words)
     REQUEST_DATA['sign'] = sign
     REQUEST_DATA['i'] = words
     result_data = get_result(REQUEST_URL, REQUEST_DATA, HEADER, REQUEST_METHOD)
-    result_dict = result_data['translateResult'][0][0]
-    return result_dict
+    result_list = result_data['translateResult'][0]
+    for result_dict in result_list:
+        yield result_dict
+
+
+def translate(words: str):
+    results = generate_result_dict(words)
+    final_dict = {'tgt': '', 'src': ''}
+    for result in results:
+        final_dict['src'] += result['src']
+        final_dict['tgt'] += result['tgt']
+    return final_dict
 
 
 if __name__ == '__main__':
