@@ -18,7 +18,7 @@ def __parse_to_word_list(text, last_word, word_list):
 
 
 def solve():
-    with open('D:\PycharmProjects\Practice\learning\in.txt', 'r') as fin:
+    with open('/\learning\in.txt', 'r') as fin:
         word_list, last_word = [], ''
         while True:
             text = fin.read(CHUNK_SIZE)
@@ -44,7 +44,7 @@ print(solve())
 # from collections import defaultdict
 # import re
 #
-# f = open("D:\PycharmProjects\Practice\learning\in.txt", mode="r", encoding="utf-8")
+# f = open("D:\PycharmProjects\practice\learning\in.txt", mode="r", encoding="utf-8")
 # d = defaultdict(int)
 #
 # for line in f:

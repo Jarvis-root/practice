@@ -56,7 +56,7 @@ class TestCaseDemo(unittest.TestCase):
         """
         self.driver.get(self.test_page)
         print('打开浏览器, 访问: {}'.format(self.test_page))
-        title = UiAutoTestCase.parse(self.driver.page_source, '//title/text()')[0]
+        title = TestCaseDemo.parse(self.driver.page_source, '//title/text()')[0]
         print('获取到对应的title: {}'.format(title))
         self.assertEqual(title, "Raymond's Blog")
 

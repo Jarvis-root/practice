@@ -4,7 +4,7 @@ from Resource import common, HTMLTestRunner
 from selenium import webdriver
 from elog import aw_LogInfo
 
-from BeautifulReport import BeautifulReport
+from Resource.beautiful_report import BeautifulReport
 
 #
 # class TestDoubanlogin(unittest.TestCase):
@@ -56,12 +56,12 @@ if __name__ == '__main__':
     # suite = unittest.TestSuite()
     # suite.addTest(TestDoubanlogin('test_login'))
     # suite.addTest(TestDoubanbook('test_bk'))
-    # f = open(r'D:\PycharmProjects\Practice\Report\Report-{}.html'.format(time.strftime('%Y-%m-%d-%M-%S')), 'wb')
+    # f = open(r'D:\PycharmProjects\practice\Report\Report-{}.html'.format(time.strftime('%Y-%m-%d-%M-%S')), 'wb')
     # runner = HTMLTestRunner.HTMLTestRunner(stream=f, title='自动化测试报告', description='Test Result：', verbosity=3)
     # runner.run(suite)
     # f.close()
     if __name__ == '__main__':
-        test_suite = unittest.TestSuite((TestDoubanbook('test_bk'),TestDoubanbook('test_hh')))
+        test_suite = unittest.TestSuite((TestDoubanbook('test_hh'),))
         result = BeautifulReport(test_suite)
         result.report(filename='测试报告', description='测试deafult报告', log_path='report')
 

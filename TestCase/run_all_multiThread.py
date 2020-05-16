@@ -3,7 +3,7 @@ from HtmlTestRunner import HTMLTestRunner
 from Resource import HTMLTestRunner
 
 # suite = unittest.TestSuite()
-discover = unittest.defaultTestLoader.discover('D:\\PycharmProjects\\Practice\\',
+discover = unittest.defaultTestLoader.discover('/\\',
                                                pattern='douban_G*.py', top_level_dir='D:\\PycharmProjects\\')
 tests = list()
 for testSuite in discover:

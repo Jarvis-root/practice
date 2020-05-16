@@ -66,7 +66,8 @@ FIELDS = {
 
 class PATH:
     """ all file PATH meta """
-    config_tmp_path = SITE_PAKAGE_PATH + '/beautiful_report/template/template'
+    # config_tmp_path = SITE_PAKAGE_PATH + '/beautiful_report/template/template'  # 放在site_packages下用这个
+    config_tmp_path = '../Resource/beautiful_report/template/template'
 
 
 class MakeResultJson:
@@ -392,7 +393,7 @@ class BeautifulReport(ReportTestResult, PATH):
         """
             接受传递进函数的filename 并找到文件转换为base64格式
         :param img_path: 通过文件名及默认路径找到的img绝对路径
-        :param file_name: 用户在装饰器中传递进来的问价匿名
+        :param file_name: 用户在装饰器中传递进来的文件名
         :return:
         """
         pattern = '/' if platform != 'Windows' else '\\'
