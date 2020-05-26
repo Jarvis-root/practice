@@ -89,10 +89,9 @@ import time, random
 #
 # print(index(3))
 
-"""类装饰器"""
+
+"""类装饰器写法一"""
 class Foo(object):
-    def __init__(self):
-        pass
 
     def __call__(self, func):
         def _call(*args, **kw):
@@ -102,10 +101,27 @@ class Foo(object):
         return _call
 
 
-class Bar(object):
-    @Foo()
-    def bar(self, test, ids):   # bar = Foo()(bar)
-        print(test, ids)
+@Foo()
+def bar(test, ids):   # bar = Foo()(bar)
+    print(test, ids)
 
 
-Bar().bar('aa', 555)
+bar('aa', 555)
+
+
+"""类装饰器写法2"""
+class Foo1(object):
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kw):
+        print('class decorator runing')
+        return self.func(*args, **kw)
+
+
+@Foo1
+def bar(test, ids):
+    print(test, ids)
+
+
+bar('aa', 555)
