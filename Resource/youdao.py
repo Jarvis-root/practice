@@ -23,6 +23,26 @@ HEADER.setdefault('Referer', 'http://fanyi.youdao.com/')
 HEADER.setdefault('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
 
 # 用于加密的字段：
+# 加密字段破解方法：
+# 1.通过搜索salt字段找到对应的js文件
+# 2.找到代码：define("newweb/common/service", ["./utils", "./md5", "./jquery-1.7"], function(e, t) {
+#     var n = e("./jquery-1.7");
+#     e("./utils");
+#     e("./md5");
+#     var r = function(e) {
+#         var t = n.md5(navigator.appVersion)
+#           , r = "" + (new Date).getTime()
+#           , i = r + parseInt(10 * Math.random(), 10);
+#         return {
+#             ts: r,
+#             bv: t,
+#             salt: i,
+#             sign: n.md5("fanyideskweb" + e + i + "Nw(nmmbP%A-r6U3EUn]Aj")
+#         }
+#     };
+# 3.从js可以看出字段数据怎么来的，参数e可以打断点来看是什么，可以看出就是要翻译的文字
+
+
 app_version = '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)' \
               ' Chrome/78.0.3904.108 Safari/537.36'
 t = md5(app_version.encode('utf-8')).hexdigest()
