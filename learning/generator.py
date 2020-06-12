@@ -6,8 +6,8 @@ def generator():
 #  这样用永远在第一个元素：  原因： 每次调用generator函数都生成了一个新的<class 'generator'>
 print(generator().__next__())
 print(generator().__next__())
-print(generator().__next__())
-
+# print(generator().__next__())
+#
 # 这样才行，必须保存一个生成器对象，这样就只有一个<class 'generator'> ：
 a = generator()
 print(a.__next__())
