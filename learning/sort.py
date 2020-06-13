@@ -39,8 +39,8 @@ a = [7, 46, 21698, 87, 132, 21, 77, 65, 4, 6, 5, 99, 0.1]
 if __name__ == '__main__':
     # dis.dis(quick_sort)
     l = []
-    for i in range(100):
-        l.append(randint(10, 99999999))
+    for i in range(1000000):
+        l.append(randint(10, 900999999))
     print(l)
     r = selection_sort(l)
     print(r)
