@@ -80,22 +80,30 @@ def generate_result_dict(words: str):
     REQUEST_DATA['sign'] = sign
     REQUEST_DATA['i'] = words
     result_data = get_result(REQUEST_URL, REQUEST_DATA, HEADER, REQUEST_METHOD)
-    result_list = result_data['translateResult'][0]
-    for result_dict in result_list:
-        yield result_dict
+    try:
+        result_list = result_data['translateResult'][0]
+        for result_dict in result_list:
+            yield result_dict
+    except KeyError:
+        yield 
 
 
 def translate(words: str):
     results = generate_result_dict(words)
     final_dict = {'tgt': '', 'src': ''}
     for result in results:
-        final_dict['src'] += result['src']
-        final_dict['tgt'] += result['tgt']
+        if result:
+            final_dict['src'] += result['src']
+            final_dict['tgt'] += result['tgt']
     return final_dict
 
 
 if __name__ == '__main__':
     input_ = input('请输入需翻译的内容：')
     ret = translate(input_)
-    print('原语言：' + ret['src'])
-    print('翻译结果：' + ret['tgt'])
+    if not ret['tgt']:
+        print(f'{input_}翻译不出来！')
+    else:
+        print('原语言：' + ret['src'])
+        print('翻译结果：' + ret['tgt'])
+    
