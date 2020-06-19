@@ -40,7 +40,7 @@ class Foo(metaclass=MyMeta):
     flag = 'metaclass可以操作它创建的所有类的属性'
     print(f'原来的：{flag}')
 
-    def __init__(self):  # 如果在metaclass的__call__()中不调用cls.__init__()，连这个方式都不运行
+    def __init__(self):  # 如果在metaclass的__call__()中不调用cls.__init__()，连这个方法都不运行
         print('hhhhhhh')
         self.name = 1
 
