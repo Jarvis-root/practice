@@ -1,4 +1,4 @@
-# 装饰器实现单例
+# 装饰器实现单例，没有实现线程安全
 def singleton(cls):
     _instance = {}
 
@@ -19,6 +19,23 @@ class Cls(object):
 cls1 = Cls()
 cls2 = Cls()
 print(id(cls1) == id(cls2))
+
+from threading import RLock
+
+def singleton(cls):
+    """线程安全的单例装饰器"""
+    instances = {}
+    locker = RLock()
+
+    def wrapper(*args, **kwargs):
+        if cls not in instances:
+            with locker:  # 我们先做了一次不带锁的检查，然后再做带锁的检查，这样做比直接加锁检查性能要更好，
+                # 如果对象已经创建就没有必须再去加锁而是直接返回该对象就可以了
+                if cls not in instances:
+                    instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+
+    return wrapper
 
 
 # new方法
