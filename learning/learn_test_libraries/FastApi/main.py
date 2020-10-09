@@ -23,3 +23,11 @@ def read_item(item_id: int, q: str = None):
 @app.put("/items/{item_id}")
 def update_item(item_id: int, item: Item):
     return {"item_name": item.name, "item_id": item_id}
+
+
+@app.post('/text')
+def get_text():
+
+    with open(r'E:\GameDownload\allure-commandline-2.13.5.zip', 'rb') as f:
+        text = f.read()
+    return text

@@ -69,7 +69,7 @@ def get_html():
     # for coockie in coockies:
     #     driver.add_cookie(coockie)
     driver.implicitly_wait(10)
-    driver.get('https://time.geekbang.org/column/article/42051')
+    driver.get('https://time.geekbang.org/column/article/96570')
     driver.execute_script("(function(){ if(!window.jQuery){ var s = document.createElement('script'); s.type = "
                           "'text/javascript'; s.src = 'https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js'; "
                           "document.body.appendChild(s); } } )();")
@@ -78,7 +78,7 @@ def get_html():
     ret = driver.execute_script("return typeof jQuery;")
 
     print(ret)
-    ret = driver.execute_script("return (function(){var a = $('div').innerText;return {'text':a};})()")
+    ret = driver.execute_script("return (function(){var a = $('div[data-slate-editor]').innerText;return {'text':a};})()")
     print(ret)
 
 
