@@ -16,6 +16,7 @@ print(a.__next__())
 print(a)
 print(type(a))  # <class 'generator'> generator本身是一个function，但是因为yield，他返回的时一个generator类
 
+
 # 这里是一个简单的例子，演示了生成器和生成器函数的行为:
 def echo(value=None):
     print("Execution starts when 'next()' is called for the first time.")
@@ -35,4 +36,3 @@ print(next(a))
 print(a.send(2))
 a.throw(TypeError, "spam")
 a.close()
-
