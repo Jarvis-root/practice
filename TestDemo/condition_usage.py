@@ -10,7 +10,7 @@ from time import sleep
 import threading
 
 
-class Account():
+class Account:
     """银行账户"""
 
     def __init__(self, balance=0):
@@ -56,8 +56,8 @@ def sub_money(account):
 
 def main():
     account = Account()
-    with ThreadPoolExecutor(max_workers=10) as pool:
-        for _ in range(5):
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        for _ in range(16):
             pool.submit(add_money, account)
             pool.submit(sub_money, account)
 

@@ -70,6 +70,16 @@ def Foo(op, n1, n2):
     return eval("%d %s %d" % (n1, op, n2))
 
 
+import functools
+
+def choose(a:float ,b:float):
+    if a > b:
+        return a
+    return b
 
 
+print(choose(5, 2))
+choose_other = functools.partial(choose,b=6)
+
+print(choose_other(5))
 

@@ -16,7 +16,7 @@ print(a.__next__())
 print(a)
 print(type(a))  # <class 'generator'> generator本身是一个function，但是因为yield，他返回的时一个generator类
 
-print('-------------------------------------')
+
 # 这里是一个简单的例子，演示了生成器和生成器函数的行为:
 def echo(value=None):
     print("Execution starts when 'next()' is called for the first time.")
@@ -34,32 +34,5 @@ a = echo(1)
 print(next(a))
 print(next(a))
 print(a.send(2))
-# a.throw(TypeError, "spam")
+a.throw(TypeError, "spam")
 a.close()
-
-print('-------------------------------------')
-from itertools import *
-
-# 这里每一个yield的值必须是可迭代的，才能用chain.from_iterable方法合并
-def make_iterables_to_chain():
-    yield [1,2,3]
-    yield ['a','b','c']
-    yield ['hello','world']
-
-for v in make_iterables_to_chain():
-    print(v)
-# 将所有可迭代对象合并成一个可迭代对象L
-for v in chain.from_iterable(make_iterables_to_chain()):
-    print('<',v,'>', end = ' ')
-print('-------上面的代码相当于下面的写法-------')
-a = [1,2,3]
-a.extend(['a','b','c'])
-a.extend(['hello','world'])
-print(a)
-for v in a:
-    print('[',v,']', end = ' ')
-#  以可迭代对象形式返回列表的全排列
-values = [1,2,3,4]
-values_permutations = permutations(values)
-for p in values_permutations:
-    print(p)
