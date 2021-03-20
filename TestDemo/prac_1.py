@@ -76,24 +76,30 @@ import json
 from urllib.request import urlretrieve
 
 
-json.loads('{"hh": "1"}')
-u = 'http://www.douqq.com/qqmusic/'  # <title>QQ音乐无损接口api</title>
+# json.loads('{"hh": "1"}')
+# u = 'http://www.douqq.com/qqmusic/'  # <title>QQ音乐无损接口api</title>
+#
+#
+# datas = (('hhh', str(i), d) for i in range(10) for d in range(5))
+# print(datas.__next__())
+# print(datas.__next__())
+# print(datas.__next__())
+#
+# c = '温柔 《涩女郎》电视剧插曲|《落跑吧爱情》电影插曲|《侠女闯天关》台视版电视剧片尾曲.mp3'
+# if ' ' in c:
+#     print(c.index(' '))
+# print(c[0:2])
+# # breakpoint()
+# d = {1 : (2 if True else 1)}
+#
+# print(d)
+#
+# n = input('dshuru')
+# if n == 'y':
+#     print('sdasd')
 
-
-datas = (('hhh', str(i), d) for i in range(10) for d in range(5))
-print(datas.__next__())
-print(datas.__next__())
-print(datas.__next__())
-
-c = '温柔 《涩女郎》电视剧插曲|《落跑吧爱情》电影插曲|《侠女闯天关》台视版电视剧片尾曲.mp3'
-if ' ' in c:
-    print(c.index(' '))
-print(c[0:2])
-breakpoint()
-d = {1 : (2 if True else 1)}
-
-print(d)
-
-n = input('dshuru')
-if n == 'y':
-    print('sdasd')
+try:
+    while True:
+        print('111')
+except KeyboardInterrupt:
+    print('222')

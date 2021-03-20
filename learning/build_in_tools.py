@@ -4,7 +4,7 @@
 """
 import heapq
 # import this
-import json
+import functools
 
 list1 = [34, 25, 12, 99, 87, 63, 58, 78, 88, 92]
 list2 = [
