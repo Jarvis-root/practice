@@ -10,6 +10,7 @@ def v_lookup(name: str, excel_to_merge, excel_to_be_merged):
     :param excel_to_be_merged:
     """
     excel_to_merge = pd.read_excel(excel_to_merge)
+    # print(excel_to_merge.to_dict())
     excel_to_be_merged = pd.read_excel(excel_to_be_merged)
     re = pd.merge(excel_to_be_merged, excel_to_merge[['学号', '成绩']], on='学号')
     print(re)

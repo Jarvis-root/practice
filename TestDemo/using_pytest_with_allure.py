@@ -9,6 +9,7 @@ import pytest
 
 def test_success():
     """this test succeeds"""
+    ''.strip()
     assert True
 
 
