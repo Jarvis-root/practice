@@ -38,10 +38,24 @@ a = [7, 46, 21698, 87, 132, 21, 77, 65, 4, 6, 5, 99, 0.1]
 # print(a)
 if __name__ == '__main__':
     # dis.dis(quick_sort)
-    l = []
-    for i in range(1000000):
-        l.append(randint(10, 900999999))
-    print(l)
-    r = selection_sort(l)
-    print(r)
+    # l = []
+    # for i in range(1000000):
+    #     l.append(randint(10, 900999999))
+    # print(l)
+    # r = selection_sort(l)
+    # print(r)
+    def bubble_sort(collection):
+        length = len(collection)
+        while True:
+            swapped = False
+            for j in range(length - 1):
+                if collection[j] > collection[j + 1]:
+                    swapped = True
+                    collection[j], collection[j + 1] = collection[j + 1], collection[j]
+            if not swapped:
+                break  # Stop iteration if the collection is sorted.
+        return collection
 
+    import random, string
+    a = bubble_sort(random.choices(string.ascii_letters + string.digits, k=100))
+    print(a)
