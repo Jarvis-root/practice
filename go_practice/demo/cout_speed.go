@@ -15,7 +15,7 @@ func main() {
 	fmt.Println(a)
 	fmt.Println(a == 0.3)
 	c := 0.0
-	arr := []float64{0.05, 0.20, 0.50}
+	arr := []float64{0.05, 0.20, 0.50} //声明数组
 	rand.Seed(time.Now().Unix())
 	for c < 20 {
 		c += arr[rand.Intn(3)]

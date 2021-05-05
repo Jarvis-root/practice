@@ -23,6 +23,9 @@ func get_rand_char() string {
 func s() string {
 	var str string = "lalalalalla"
 	fmt.Println(strings.Contains(str, "a"))
+
+	fmt.Println(`这个是原始字符串\n \r`)
+	fmt.Println("das\\n dsad")
 	return str
 }
 
