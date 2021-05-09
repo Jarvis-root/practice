@@ -6,7 +6,7 @@ import (
 	"math/big"
 )
 
-func integer() {
+func Integer() {
 	year := 2021
 	fmt.Printf("year 的类型是：%T\n", year)
 
@@ -20,7 +20,7 @@ func integer() {
 	fmt.Printf("c 的类型是：%T\n", c)
 
 	d := 'd' // 单引号表示字符，在go里面叫rune。rune是int32的别名
-	fmt.Printf("d 的类型是：%T\n", d)
+	fmt.Printf("d 的类型是：%T, 值是%v\n", d, d)
 
 	var red uint8 = 255 // 整数环绕，uint8：0-255，超过范围会环绕
 	red++
@@ -43,5 +43,5 @@ func integer() {
 
 }
 func main() {
-	integer()
+	Integer()
 }

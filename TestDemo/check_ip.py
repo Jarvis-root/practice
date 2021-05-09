@@ -1,4 +1,10 @@
+import re
+
 import pytest
+
+
+def check_ip_re(ip):
+    return re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$').match(ip)
 
 
 def check_ip(ip: str):
@@ -30,6 +36,7 @@ def check_ip(ip: str):
     '!!!'
 ])
 def test_fail(s):
+    assert not check_ip_re(s)
     assert not check_ip(s)
 
 
@@ -40,6 +47,7 @@ def test_fail(s):
     '127.0.0.1',
 ])
 def test_suc(s):
+    assert check_ip_re(s)
     assert check_ip(s)
 
 
