@@ -25,13 +25,26 @@ def selection_sort(sequence):
     length = len(sequence)
     if length <= 1:
         return sequence
-    for i in range(length-1):  # 最后一次不用遍历，因为最后一次后不会进入子循环
+    for i in range(length - 1):  # 最后一次不用遍历，因为最后一次后不会进入子循环
         least = i
-        for j in range(i+1, length):
+        for j in range(i + 1, length):
             if sequence[j] < sequence[least]:
                 least = j
         sequence[i], sequence[least] = sequence[least], sequence[i]
     return sequence
+
+
+def bubble_sort(collection):
+    length = len(collection)
+    while True:
+        swapped = False
+        for j in range(length - 1):
+            if collection[j] > collection[j + 1]:
+                swapped = True
+                collection[j], collection[j + 1] = collection[j + 1], collection[j]
+        if not swapped:
+            break  # Stop iteration if the collection is sorted.
+    return collection
 
 
 a = [7, 46, 21698, 87, 132, 21, 77, 65, 4, 6, 5, 99, 0.1]
@@ -44,18 +57,8 @@ if __name__ == '__main__':
     # print(l)
     # r = selection_sort(l)
     # print(r)
-    def bubble_sort(collection):
-        length = len(collection)
-        while True:
-            swapped = False
-            for j in range(length - 1):
-                if collection[j] > collection[j + 1]:
-                    swapped = True
-                    collection[j], collection[j + 1] = collection[j + 1], collection[j]
-            if not swapped:
-                break  # Stop iteration if the collection is sorted.
-        return collection
 
     import random, string
+
     a = bubble_sort(random.choices(string.ascii_letters + string.digits, k=100))
     print(a)
