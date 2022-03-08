@@ -54,24 +54,32 @@ def read_disk_one_sector_in_bytes(disk_num: str, absolute_lba_address: int, sect
         return data
 
 
-def find_root_dir_file_fat(disk_num, fat_root_dir_1st_sector, find_removed_file=True, sector_size=512):
+def find_root_dir_entries_fat(disk_num, fat_root_dir_1st_sector, find_removed_file=True, sector_size=512):
+    """
+    返回fat根目录文件目录表目录项
+    :param disk_num: 磁盘编号
+    :param fat_root_dir_1st_sector: 根目录表开始簇第一个扇区
+    :param find_removed_file: 返回已删除的目录项，或者未删除的
+    :param sector_size: 扇区大小
+    :return:
+    """
     device_name = f'\\\\.\\PHYSICALDRIVE{disk_num}'
     with open(device_name, 'rb') as disk:
         disk.seek(fat_root_dir_1st_sector * sector_size, 0)
         res = {}
-        _find_removed_file_fat(disk, res, sector_size, find_removed_file)
+        _process_data(disk, res, sector_size, find_removed_file)
         return res
 
 
 # @pysnooper.snoop()
-def _find_removed_file_fat(disk, result, sector_size, find_removed_file=True):
+def _process_data(disk, result, sector_size, find_removed_file=True):
     bytes_ = disk.read(sector_size)
     if int.from_bytes(bytes_, 'little') == 0:
         return
     for i in range(0, len(bytes_), 32):
         b = bytes_[i: i+32]
         hex_str = b.hex()
-        if int.from_bytes(b, 'little') == 0:
+        if int(hex_str, 16) == 0:
             break
         if hex_str[23] == 'f'.casefold():  # 排除长文件名
             continue
@@ -80,8 +88,8 @@ def _find_removed_file_fat(disk, result, sector_size, find_removed_file=True):
                 result[b] = hex_str
         else:
             if not hex_str.startswith('e5'):
-                result[b[:8].decode('GBK')] = hex_str
-    _find_removed_file_fat(disk, result, sector_size, find_removed_file)
+                result[f"{b[:8].decode('GBK').strip()}.{b[8: 11].decode()}"] = hex_str
+    _process_data(disk, result, sector_size, find_removed_file)
 
 
 if __name__ == '__main__':
@@ -90,5 +98,5 @@ if __name__ == '__main__':
     # print(hex_str_to_normal_str(normal_str_to_hex_str('哈哈啦啦啦啊as')))
     # print((read_disk_one_sector_in_hex('3', 8413304)))
     # print((read_disk_one_sector_in_bytes('3', 8413288)).decode())
-    print(find_root_dir_file_fat('3', 8413240, find_removed_file=False))  # fat32
-    print(find_root_dir_file_fat('2', 1562023, find_removed_file=False))  # fat16
+    print(find_root_dir_entries_fat('3', 8413240, find_removed_file=True))  # fat32
+    print(find_root_dir_entries_fat('2', 1562023, find_removed_file=True))  # fat16
