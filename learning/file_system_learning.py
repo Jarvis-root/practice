@@ -98,5 +98,6 @@ if __name__ == '__main__':
     # print(hex_str_to_normal_str(normal_str_to_hex_str('哈哈啦啦啦啊as')))
     # print((read_disk_one_sector_in_hex('3', 8413304)))
     # print((read_disk_one_sector_in_bytes('3', 8413288)).decode())
-    print(find_root_dir_entries_fat('3', 8413240, find_removed_file=True))  # fat32
-    print(find_root_dir_entries_fat('2', 1562023, find_removed_file=True))  # fat16
+    print(find_root_dir_entries_fat('1', 8413240, find_removed_file=True))  # fat32
+    # print(find_root_dir_entries_fat('2', 1562023, find_removed_file=True))  # fat16
+    print(convert_to_big_endian('31A1681D3334D801'))
