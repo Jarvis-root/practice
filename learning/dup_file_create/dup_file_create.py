@@ -1,7 +1,7 @@
 import os
 import random
 import shutil
-
+from string import ascii_letters
 from faker import Faker
 
 F = Faker('zh-CN')
@@ -25,6 +25,11 @@ def write_content(file, content: bytes):
         f.write(content)
 
 
+def yield_letter():
+    for n in ascii_letters:
+        yield n
+
+
 def create_duplicate_files(file_count,
                            file_size_bytes,
                            head_same_bytes=0,
@@ -34,7 +39,9 @@ def create_duplicate_files(file_count,
     text = F.pystr(file_size_bytes, file_size_bytes)
     files = []
     other_bytes = 0
+    gen = yield_letter()
     if file_size_bytes > head_same_bytes:
+        assert len(ascii_letters) >= file_count
         text = text[:int(head_same_bytes)]
         other_bytes = file_size_bytes - head_same_bytes
     for _ in range(file_count):
@@ -49,7 +56,9 @@ def create_duplicate_files(file_count,
                 os.makedirs(d)
             with open(file_name, 'w') as f:
                 if file_size_bytes > head_same_bytes:
-                    new_str = text + F.pystr(other_bytes, other_bytes)
+                    new = F.pystr(other_bytes, other_bytes)
+                    new = next(gen) + new[1:]
+                    new_str = text + new
                     f.write(new_str)
                 else:
                     f.write(text)
@@ -83,4 +92,4 @@ def copy_file(abs_filename,
 
 
 if __name__ == '__main__':
-    create_duplicate_files(1,15,10, extension='random')
+    create_duplicate_files(51, 15, 10, extension='random')
