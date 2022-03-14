@@ -74,7 +74,6 @@ class UI:
         ext_entry.grid(row=10, column=1, pady=3)
 
         path_entry.insert(0, BASE_PATHS)
-        same_bytes_entry.insert(0, HEAD_SAME_BYTES)
         random_ext_check = IntVar()
         random_ext_check.set(0)
 
@@ -98,6 +97,14 @@ class UI:
                 messagebox.showinfo(title='温馨提示', message='输入文件个数错误！')
                 return
             size = size_entry.get()
+            same_bytes = same_bytes_entry.get()
+            if not same_bytes:
+                same_bytes = 0
+            try:
+                same_bytes = int(same_bytes)
+            except ValueError:
+                messagebox.showinfo(title='温馨提示', message='输入头部相同字节数错误！')
+                return
             try:
                 size = int(size)
             except ValueError:
@@ -112,14 +119,15 @@ class UI:
                 messagebox.showinfo(title='温馨提示', message='基础路径错误！')
                 return
             try:
-                ret = create_duplicate_files(count, size, base_paths=base_paths, extension=ext)
+                ret = create_duplicate_files(count, size, same_bytes, base_paths=base_paths, extension=ext)
                 s = ''
                 for i in ret:
                     s = s + i + '\n'
+                text1.insert(END, s)
+                messagebox.showinfo(title='温馨提示', message='执行成功')
             except Exception as e:
                 s = str(e)
-            text1.insert(END, s)
-            messagebox.showinfo(title='温馨提示', message='执行成功')
+                text1.insert(END, s)
 
         Button(self.frame_text_file_create_ui, text='执行', bg='white', width=8, height=1, command=check_input).grid(
             row=6, column=5, padx=4)
