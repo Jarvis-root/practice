@@ -119,7 +119,10 @@ class UI:
                 messagebox.showinfo(title='温馨提示', message='基础路径错误！')
                 return
             try:
-                ret = create_duplicate_files(count, size, same_bytes, base_paths=base_paths, extension=ext)
+                if not same_bytes:
+                    ret = create_duplicate_files(count, size, base_paths=base_paths, extension=ext)
+                else:
+                    ret = create_same_head_files(count, size, same_bytes, base_paths=base_paths, extension=ext)
                 s = ''
                 for i in ret:
                     s = s + i + '\n'
