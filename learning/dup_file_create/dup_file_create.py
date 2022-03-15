@@ -1,6 +1,7 @@
 import os
 import random
 import shutil
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from string import ascii_letters
 
 from faker import Faker
@@ -10,6 +11,7 @@ F = Faker()
 # print(F.pystr(5, 5))
 BASE_PATHS = 'D:\\TEST'
 EXTENSION = 'test-duplicate'
+EXECUTING = False
 
 
 def mkdir(path: str):
@@ -44,13 +46,16 @@ def create_duplicate_files(file_count,
     files = []
     gen_base_path = yield_base_path(base_paths)
     one_mb = 1048576
-
+    global EXECUTING
+    EXECUTING = True
     # 生成文件名：
     for _ in range(file_count):
         if not dir_depth:
             depth = random.randint(1, 5)
         else:
             depth = int(dir_depth)
+            if depth > 10:
+                depth = 10
         if extension == 'random':
             file_path = F.file_path(depth=depth)
         else:
@@ -75,21 +80,30 @@ def create_duplicate_files(file_count,
         text = F.pystr(file_size_bytes, file_size_bytes)
         with open(files[0], 'w') as f:
             f.write(text)
+    if file_count > 1:
+        with ThreadPoolExecutor(max_workers=file_count - 1) as exe:
+            futures = []
+            for i, file_name in enumerate(files):
+                if i == 0:
+                    continue
+                futures.append(exe.submit(shutil.copy2, files[0], file_name))
+            for _ in as_completed(futures):
+                pass
 
-    for i, file_name in enumerate(files):
-        if i == 0:
-            continue
-        else:
-            shutil.copy2(files[0], file_name)
+    EXECUTING = False
     return files
 
 
-def create_same_head_files(file_count,
-                           file_size_bytes,
-                           head_same_bytes,
-                           base_paths=BASE_PATHS,
-                           extension: str = EXTENSION,
-                           dir_depth: int = None):
+def create_same_head_files(
+        file_count,
+        file_size_bytes,
+        head_same_bytes,
+        base_paths=BASE_PATHS,
+        extension: str = EXTENSION,
+        dir_depth: int = None,
+):
+    global EXECUTING
+    EXECUTING = True
     assert file_size_bytes >= head_same_bytes, '头部字节数不能大于文件大小'
     assert 52 >= file_count, '指定头部字节相同时，每次最大只能创建52个文件'
     files = []
@@ -102,6 +116,8 @@ def create_same_head_files(file_count,
             depth = random.randint(1, 5)
         else:
             depth = int(dir_depth)
+            if depth > 10:
+                depth = 10
         if extension == 'random':
             file_path = F.file_path(depth=depth)
         else:
@@ -115,32 +131,43 @@ def create_same_head_files(file_count,
     text_same_head = F.pystr(head_same_bytes, head_same_bytes)
     left_size = file_size_bytes - head_same_bytes
 
-    for file_name in files:
-        new_text_same_head = text_same_head + next(gen_letter)
-        if left_size > one_mb:
-            with open(file_name, 'a') as f:
-                f.write(new_text_same_head)
-                size_n = left_size // one_mb
-                size_m = left_size % one_mb
+    if left_size > one_mb:
+        def do_work():
+            new_same_head = text_same_head + next(gen_letter)
+            real_left_size = left_size - 1
+            with open(file_name, 'a') as f0:
+                f0.write(new_same_head)
+                size_n = real_left_size // one_mb
+                size_m = real_left_size % one_mb
                 text_one_mb = F.pystr(one_mb, one_mb)
                 for _ in range(size_n):
-                    f.write(text_one_mb)
+                    f0.write(text_one_mb)
                 if size_m:
-                    f.write(text_one_mb[:size_m])
-        else:
-            s = F.pystr(left_size, left_size)
+                    f0.write(text_one_mb[:size_m])
+
+        with ThreadPoolExecutor(max_workers=file_count) as exe:
+            futures = []
+            for file_name in files:
+                futures.append(exe.submit(do_work))
+            for _ in as_completed(futures):
+                pass
+    else:
+        for file_name in files:
+            s = F.pystr(left_size - 1, left_size - 1)
+            new_text_same_head = text_same_head + next(gen_letter)
             text = new_text_same_head + s
             with open(file_name, 'w') as f:
                 f.write(text)
 
     # with open(files[0]) as f, open(files[1]) as f1:
     #     # assert len(f.read()) == len(f1.read())
-    #     r1 = f.read(head_same_bytes+1)
-    #     r2 = f1.read(head_same_bytes+1)
-    #     if r1[:head_same_bytes] == r2[:head_same_bytes] :
+    #     r1 = f.read(head_same_bytes + 1)
+    #     r2 = f1.read(head_same_bytes + 1)
+    #     if r1[:head_same_bytes] == r2[:head_same_bytes]:
     #         print(111)
     #     if r1[-1] != r2[-1]:
     #         print(222)
+    EXECUTING = False
     return files
 
 
@@ -168,7 +195,6 @@ def copy_file(abs_filename,
 
     return files
 
-
-if __name__ == '__main__':
-    # create_duplicate_files(4, 104857500, extension='random')
-    create_same_head_files(2, 10485760, 1048576, extension='random')
+# if __name__ == '__main__':
+# create_duplicate_files(4, 104857500, extension='random')
+# create_same_head_files(2/, 1048, 104, extension='random')
