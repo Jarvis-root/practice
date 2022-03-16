@@ -1,7 +1,9 @@
+import traceback
 from threading import Thread
 from tkinter import Tk, Label, Entry, Button, IntVar, Checkbutton, Frame, Radiobutton, StringVar, messagebox
 from tkinter.constants import TOP, END, HORIZONTAL, LEFT, DISABLED, NORMAL
 from tkinter.scrolledtext import ScrolledText
+from tkinter.filedialog import askdirectory
 from tkinter.ttk import Separator
 
 from file_time import *
@@ -206,7 +208,11 @@ class UI:
                 for file in ret:
                     s = s + file + '\n'
                     if any([file_create_time, file_modify_time, file_access_time]):
-                        r = modify_file_time(file, file_create_time, file_modify_time, file_access_time)
+                        try:
+                            modify_file_time(file, file_create_time, file_modify_time, file_access_time)
+                        except Exception as e:
+                            traceback.print_exc()
+                            s = s + str(e) + '\n'
                 text1.insert(END, s)
                 # messagebox.showinfo(title='温馨提示', message='执行成功')
             except Exception as e:
@@ -217,6 +223,8 @@ class UI:
         self.exe_button1 = Button(self.frame_text_file_create_ui, text='执行', bg='#f0f0f0', width=8, height=1,
                                   command=lambda: Thread(target=check_input_and_execute).start())
         self.exe_button1.grid(row=10, column=5, padx=4)
+        Button(self.frame_text_file_create_ui, text='选择目录', bg='#f0f0f0', width=8, height=1,
+               command=lambda: askdirectory()).grid(row=8, column=5, padx=4)
         text1 = ScrolledText(self.frame_text_file_create_ui, width=75, height=15)
         text1.grid(row=26, column=0, columnspan=10)
 

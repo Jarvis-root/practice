@@ -11,7 +11,6 @@ F = Faker()
 # print(F.pystr(5, 5))
 BASE_PATHS = 'D:\\TEST'
 EXTENSION = 'test-duplicate'
-EXECUTING = False
 
 
 def mkdir(path: str):
@@ -46,8 +45,6 @@ def create_duplicate_files(file_count,
     files = []
     gen_base_path = yield_base_path(base_paths)
     one_mb = 1048576
-    global EXECUTING
-    EXECUTING = True
     # 生成文件名：
     for _ in range(file_count):
         if not dir_depth:
@@ -89,8 +86,6 @@ def create_duplicate_files(file_count,
                 futures.append(exe.submit(shutil.copy2, files[0], file_name))
             for _ in as_completed(futures):
                 pass
-
-    EXECUTING = False
     return files
 
 
@@ -102,8 +97,6 @@ def create_same_head_files(
         extension: str = EXTENSION,
         dir_depth: int = None,
 ):
-    global EXECUTING
-    EXECUTING = True
     assert file_size_bytes >= head_same_bytes, '头部字节数不能大于文件大小'
     assert 52 >= file_count, '指定头部字节相同时，每次最大只能创建52个文件'
     files = []
@@ -167,7 +160,6 @@ def create_same_head_files(
     #         print(111)
     #     if r1[-1] != r2[-1]:
     #         print(222)
-    EXECUTING = False
     return files
 
 
