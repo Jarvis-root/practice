@@ -166,13 +166,20 @@ def create_same_head_files(
 def copy_file(abs_filename,
               count,
               base_paths=BASE_PATHS,
-              change_file_name=False):
+              change_file_name=False,
+              dir_depth=None):
     gen_base_path = yield_base_path(base_paths)
     if not os.path.exists(abs_filename):
         return
     files = []
+    if not dir_depth:
+        depth = random.randint(1, 5)
+    else:
+        depth = int(dir_depth)
+        if depth > 10:
+            depth = 10
     for _ in range(count):
-        new_file_path = F.file_path(depth=random.randint(1, 5)).replace('/', '\\')
+        new_file_path = F.file_path(depth=depth).replace('/', '\\')
         file_name = os.path.basename(abs_filename)
         dir_name = f'{next(gen_base_path)}{os.path.dirname(new_file_path)}'
         if not os.path.exists(dir_name):

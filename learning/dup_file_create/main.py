@@ -2,12 +2,12 @@ import traceback
 from threading import Thread
 from tkinter import Tk, Label, Entry, Button, IntVar, Checkbutton, Frame, Radiobutton, StringVar, messagebox
 from tkinter.constants import TOP, END, HORIZONTAL, LEFT, DISABLED, NORMAL
+from tkinter.filedialog import askdirectory, askopenfilename
 from tkinter.scrolledtext import ScrolledText
-from tkinter.filedialog import askdirectory
 from tkinter.ttk import Separator
 
-from file_time import *
 from dup_file_create import *
+from file_time import *
 
 
 class UI:
@@ -96,7 +96,7 @@ class UI:
 
         desc1 = '默认1到5之间随机，最大10'
         desc2 = '格式：2019-02-02 00:01:02'
-        path_entry.insert(0, BASE_PATHS)
+        # path_entry.insert(0, BASE_PATHS)
         dir_level_entry.insert(0, desc1)
         file_create_time_entry.insert(0, desc2)
         file_modify_time_entry.insert(0, desc2)
@@ -221,22 +221,49 @@ class UI:
             done()
 
         self.exe_button1 = Button(self.frame_text_file_create_ui, text='执行', bg='#f0f0f0', width=8, height=1,
-                                  command=lambda: Thread(target=check_input_and_execute).start())
+                                  command=lambda: Thread(target=check_input_and_execute, daemon=True).start())
         self.exe_button1.grid(row=10, column=5, padx=4)
+
+        def select_dir():
+            directory = askdirectory()
+            path_entry.delete(0, END)
+            path_entry.insert(0, directory)
+
         Button(self.frame_text_file_create_ui, text='选择目录', bg='#f0f0f0', width=8, height=1,
-               command=lambda: askdirectory()).grid(row=8, column=5, padx=4)
+               command=select_dir).grid(row=8, column=5, padx=4)
         text1 = ScrolledText(self.frame_text_file_create_ui, width=75, height=15)
         text1.grid(row=26, column=0, columnspan=10)
 
     def copy_file_ui(self):
         # Label(self.frame_copy_file_ui, text="<拷贝多份指定文件>").grid(row=14, column=1)
-        label1 = Label(self.frame_copy_file_ui, text="源文件绝对路径：")
-        label2 = Label(self.frame_copy_file_ui, text="复制数量：")
-        label3 = Label(self.frame_copy_file_ui, text="文件存放基础路径：")
-        Label(self.frame_copy_file_ui, text="是否修改文件名：").grid(row=22)
-        label1.grid(row=16)
-        label2.grid(row=18)
-        label3.grid(row=20)
+        Label(self.frame_copy_file_ui, text="源文件绝对路径：").grid(row=16)
+        Label(self.frame_copy_file_ui, text="复制数量：").grid(row=18)
+        Label(self.frame_copy_file_ui, text="文件存放基础路径：").grid(row=20)
+        Label(self.frame_copy_file_ui, text="文件存放目录层级：").grid(row=22)
+        Label(self.frame_copy_file_ui, text="是否修改文件名：").grid(row=24)
+
+        entry1 = Entry(self.frame_copy_file_ui, width=38)
+        entry2 = Entry(self.frame_copy_file_ui, width=38)
+        entry3 = Entry(self.frame_copy_file_ui, width=38)
+        entry4 = Entry(self.frame_copy_file_ui, width=38)
+        entry1.grid(row=16, column=1, pady=5)
+        entry2.grid(row=18, column=1, pady=5)
+        entry3.grid(row=20, column=1, pady=5)
+        entry3.insert(0, BASE_PATHS)
+        entry4.grid(row=22, column=1, pady=5)
+
+        v1 = IntVar()
+        v1.set(0)
+        v2 = IntVar()
+        v2.set(0)
+
+        radio_button1 = Checkbutton(self.frame_copy_file_ui, text='是', variable=v1, onvalue=1, offvalue=0,
+                                    command=lambda: radio_button2.deselect() if v2.get() == 1 else 0)
+        radio_button2 = Checkbutton(self.frame_copy_file_ui, text='否', variable=v2, onvalue=1, offvalue=0,
+                                    command=lambda: radio_button1.deselect() if v1.get() == 1 else 0)
+        radio_button1.grid(row=24, column=1)
+        radio_button2.grid(row=24, column=2)
+        radio_button2.select()
 
         def check_input_and_execute():
             self.exe_button2['state'] = DISABLED
@@ -264,8 +291,10 @@ class UI:
                 messagebox.showinfo(title='温馨提示', message='文件存放基础路径错误！')
                 done()
                 return
+            depth = entry4.get()
             try:
-                ret = copy_file(path, count, base_dir, True) if v1.get() else copy_file(path, count, base_dir, False)
+                ret = copy_file(path, count, base_dir, True, depth
+                                ) if v1.get() else copy_file(path, count, base_dir, False, depth)
                 if not ret:
                     return
                 s = ''
@@ -275,33 +304,27 @@ class UI:
             except Exception as e:
                 s = str(e)
             text1.insert(END, s)
-
-        entry1 = Entry(self.frame_copy_file_ui, width=30)
-        entry2 = Entry(self.frame_copy_file_ui, width=30)
-        entry3 = Entry(self.frame_copy_file_ui, width=30)
-        entry1.grid(row=16, column=1, pady=3)
-        entry2.grid(row=18, column=1, pady=3)
-        entry3.grid(row=20, column=1, pady=3)
-        entry3.insert(0, BASE_PATHS)
-
-        v1 = IntVar()
-        v1.set(0)
-        v2 = IntVar()
-        v2.set(0)
-
-        radio_button1 = Checkbutton(self.frame_copy_file_ui, text='是', variable=v1, onvalue=1, offvalue=0,
-                                    command=lambda: radio_button2.deselect() if v2.get() == 1 else 0)
-        radio_button2 = Checkbutton(self.frame_copy_file_ui, text='否', variable=v2, onvalue=1, offvalue=0,
-                                    command=lambda: radio_button1.deselect() if v1.get() == 1 else 0)
-        radio_button1.grid(row=22, column=1)
-        radio_button2.grid(row=22, column=2)
-        radio_button2.select()
+            done()
 
         self.exe_button2 = Button(self.frame_copy_file_ui, text='执行', bg='#f0f0f0', width=8, height=1,
-                                  command=lambda: Thread(target=check_input_and_execute).start())
+                                  command=lambda: Thread(target=check_input_and_execute, daemon=True).start())
         self.exe_button2.grid(row=18, column=5, padx=4)
 
-        text1 = ScrolledText(self.frame_copy_file_ui, width=75, height=9)
+        def select_file():
+            file = askopenfilename()
+            entry1.delete(0, END)
+            entry1.insert(0, file)
+
+        def select_path():
+            directory = askdirectory()
+            entry3.delete(0, END)
+            entry3.insert(0, directory)
+
+        Button(self.frame_copy_file_ui, text='选择文件', bg='#f0f0f0', width=8, height=1,
+               command=select_file).grid(row=16, column=5, padx=4)
+        Button(self.frame_copy_file_ui, text='选择路径', bg='#f0f0f0', width=8, height=1,
+               command=select_path).grid(row=20, column=5, padx=4)
+        text1 = ScrolledText(self.frame_copy_file_ui, width=75, height=25)
         text1.grid(row=25, column=0, columnspan=10)
 
     def modify_file_attr_ui(self):
