@@ -27,7 +27,7 @@ def write_content(file, content: bytes):
 
 
 def yield_base_path(base_paths: str):
-    p = base_paths.split(',')
+    p = base_paths.split(';')
     while True:
         yield random.choice(p)
 

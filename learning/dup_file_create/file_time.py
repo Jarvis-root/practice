@@ -1,9 +1,7 @@
-import win32api
 from pywintypes import Time  # 可以忽视这个 Time 报错（运行程序还是没问题的）
-from win32file import CreateFile, SetFileTime, CloseHandle
-from win32file import GENERIC_READ, GENERIC_WRITE, OPEN_EXISTING
+from win32file import *
+from win32file import *
 import time
-import datetime
 
 
 def modify_file_time(filePath, createTime=None, modifyTime=None, accessTime=None):
