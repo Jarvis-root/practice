@@ -177,11 +177,7 @@ class TextFileCreateUI:
             for file in ret:
                 s = s + file + '\n'
                 if any([file_create_time, file_modify_time, file_access_time]):
-                    try:
-                        modify_file_time(file, file_create_time, file_modify_time, file_access_time)
-                    except Exception as e:
-                        traceback.print_exc()
-                        s = s + str(e) + '\n'
+                    modify_file_time(file, file_create_time, file_modify_time, file_access_time)
             self.text1.insert(END, s)
             # messagebox.showinfo(title='温馨提示', message='执行成功')
         except Exception as e:
