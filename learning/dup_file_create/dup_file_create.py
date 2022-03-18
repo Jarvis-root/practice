@@ -11,6 +11,9 @@ F = Faker()
 # print(F.pystr(5, 5))
 BASE_PATHS = 'D:\\TEST'
 EXTENSION = 'test-duplicate'
+ONE_KB = 1024
+ONE_MB = 1048576
+ONE_GB = ONE_MB * 1024
 
 
 def mkdir(path: str):
@@ -44,7 +47,6 @@ def create_duplicate_files(file_count,
                            dir_depth: int = None):
     files = []
     gen_base_path = yield_base_path(base_paths)
-    one_mb = 1048576
     # 生成文件名：
     for _ in range(file_count):
         if not dir_depth:
@@ -63,11 +65,11 @@ def create_duplicate_files(file_count,
             os.makedirs(d)
         files.append(file_name)
 
-    text_one_mb = F.pystr(one_mb, one_mb)
-    size_n = file_size_bytes // one_mb
-    size_m = file_size_bytes % one_mb
+    text_one_mb = F.pystr(ONE_MB, ONE_MB)
+    size_n = file_size_bytes // ONE_MB
+    size_m = file_size_bytes % ONE_MB
     # 创建第一个文件，后面的文件拷贝第一个
-    if file_size_bytes > one_mb:  # 大于1MB，使用a模式写，避免占用大量内存
+    if file_size_bytes > ONE_MB:  # 大于1MB，使用a模式写，避免占用大量内存
         with open(files[0], 'a') as f:
             for _ in range(size_n):
                 f.write(text_one_mb)

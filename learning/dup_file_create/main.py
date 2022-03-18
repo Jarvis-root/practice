@@ -1,9 +1,9 @@
 from threading import Thread
-from tkinter import Tk, Label, Entry, Button, IntVar, Checkbutton, Frame, Radiobutton, StringVar, messagebox
-from tkinter.constants import TOP, END, HORIZONTAL, LEFT, DISABLED, NORMAL
+from tkinter import Tk, Button, IntVar, Checkbutton, Radiobutton, StringVar, messagebox
+from tkinter.constants import END, LEFT, DISABLED, NORMAL
 from tkinter.filedialog import askdirectory, askopenfilename
 from tkinter.scrolledtext import ScrolledText
-from tkinter.ttk import Separator
+from tkinter.ttk import Entry, LabelFrame, Spinbox, Label, Progressbar
 
 from dup_file_create import *
 from file_time import *
@@ -12,11 +12,11 @@ from file_time import *
 class TextFileCreateUI:
 
     def __init__(self, master):
-        Label(master, text="文件个数：").grid(row=2, column=0)
-        Label(master, text="文件大小（字节）：").grid(row=4, column=0)
+        Label(master, text="文件个数*：").grid(row=2, column=0)
+        Label(master, text="文件大小（字节）*：").grid(row=4, column=0)
         Label(master, text="头部相同字节数：").grid(row=6, column=0)
-        Label(master, text="文件存放基础路径：").grid(row=8, column=0)
-        Label(master, text="文件目录层级：").grid(row=10, column=0)
+        Label(master, text="文件存放基础路径*：").grid(row=8, column=0)
+        Label(master, text="文件目录层级*：").grid(row=10, column=0)
         Label(master, text="文件创建时间：").grid(row=12, column=0)
         Label(master, text="文件修改时间：").grid(row=14, column=0)
         Label(master, text="文件访问时间：").grid(row=16, column=0)
@@ -27,14 +27,21 @@ class TextFileCreateUI:
         self.extension.set(EXTENSION)
         self.ext_entry = Entry(master, width=30, textvariable=self.extension)
 
-        self.count_entry = Entry(master, width=30)
-        self.size_entry = Entry(master, width=30)
-        self.same_bytes_entry = Entry(master, width=30)
-        self.path_entry = Entry(master, width=30)
-        self.dir_level_entry = Entry(master, width=30)
-        self.file_create_time_entry = Entry(master, width=30)
-        self.file_modify_time_entry = Entry(master, width=30)
-        self.file_access_time_entry = Entry(master, width=30)
+        self.count_entry = Spinbox(master, width=28, validate='focusout',
+                                   validatecommand=self.check_count_entry_input, from_=1, to=100)
+        self.size_entry = Spinbox(master, width=28, validate='focusout', validatecommand=self.check_size_entry_input,
+                                  from_=ONE_MB, to=ONE_GB, increment=ONE_MB)
+        self.same_bytes_entry = Spinbox(master, validate='focusout', validatecommand=self.check_same_bytes_entry_input,
+                                        width=28, from_=0, to=ONE_MB, increment=512)
+        self.path_entry = Entry(master, width=30, validate='focusout', validatecommand=self.check_path_entry_input)
+        self.dir_level_entry = Spinbox(master, width=28, from_=1, to=10, validate='focusout',
+                                       validatecommand=self.check_dir_level_entry_input)
+        self.file_create_time_entry = Entry(master, width=30, validate='focusout',
+                                            validatecommand=self.check_file_create_time_entry_input)
+        self.file_modify_time_entry = Entry(master, width=30, validate='focusout',
+                                            validatecommand=self.check_file_modify_time_entry_input)
+        self.file_access_time_entry = Entry(master, width=30, validate='focusout',
+                                            validatecommand=self.check_file_access_time_entry_input)
 
         self.count_entry.grid(row=2, column=1, pady=3)
         self.size_entry.grid(row=4, column=1, pady=3)
@@ -46,10 +53,8 @@ class TextFileCreateUI:
         self.file_access_time_entry.grid(row=16, column=1, pady=3)
         self.ext_entry.grid(row=18, column=1, pady=3)
 
-        self.desc1 = '默认1到5之间随机，最大10'
         self.desc2 = '格式：2019-02-02 00:01:02'
         # path_entry.insert(0, BASE_PATHS)
-        self.dir_level_entry.insert(0, self.desc1)
         self.file_create_time_entry.insert(0, self.desc2)
         self.file_modify_time_entry.insert(0, self.desc2)
         self.file_access_time_entry.insert(0, self.desc2)
@@ -66,6 +71,86 @@ class TextFileCreateUI:
                command=self.select_dir).grid(row=8, column=5, padx=4)
         self.text1 = ScrolledText(master, width=75, height=15)
         self.text1.grid(row=26, column=0, columnspan=10)
+
+    def check_count_entry_input(self):
+        try:
+            int(self.count_entry.get())
+            return True
+        except ValueError:
+            # messagebox.showerror(title='温馨提示', message='输入文件个数错误！')
+            self.count_entry.delete(0, END)
+            return False
+
+    def check_size_entry_input(self):
+        try:
+            int(self.size_entry.get())
+            return True
+        except ValueError:
+            # messagebox.showerror(title='温馨提示', message='输入文件大小错误！')
+            self.size_entry.delete(0, END)
+            return False
+
+    def check_same_bytes_entry_input(self):
+        try:
+            int(self.same_bytes_entry.get())
+            return True
+        except ValueError:
+            # messagebox.showinfo(title='温馨提示', message='输入头部相同字节数错误！')
+            self.same_bytes_entry.delete(0, END)
+            return False
+
+    def check_dir_level_entry_input(self):
+        try:
+            int(self.dir_level_entry.get())
+            return True
+        except ValueError:
+            # messagebox.showinfo(title='温馨提示', message='文件目录层级输入错误')
+            self.dir_level_entry.delete(0, END)
+            return False
+
+    def check_path_entry_input(self):
+        v = self.path_entry.get()
+        if not v:
+            messagebox.showwarning(title='温馨提示', message='请选择或输入基础路径')
+            return False
+        if ':' not in v:
+            messagebox.showerror(title='温馨提示', message='基础路径错误！')
+            self.path_entry.delete(0, END)
+            return False
+        return True
+
+    def check_file_create_time_entry_input(self):
+        v = self.file_create_time_entry.get()
+        if v == self.desc2:
+            return True
+        try:
+            get_time_struct(v)
+            return True
+        except ValueError:
+            messagebox.showinfo(title='温馨提示', message='文件创建时间格式错误！')
+            return False
+
+    def check_file_modify_time_entry_input(self):
+        v = self.file_modify_time_entry.get()
+        if v == self.desc2:
+            return True
+        try:
+            get_time_struct(v)
+            return True
+        except ValueError:
+            messagebox.showinfo(title='温馨提示', message='文件修改时间格式错误！')
+            return False
+
+    def check_file_access_time_entry_input(self):
+        v = self.file_access_time_entry.get()
+        if v == self.desc2:
+            return True
+        try:
+            get_time_struct(v)
+            return True
+        except ValueError:
+            messagebox.showinfo(title='温馨提示', message='文件访问时间格式错误！')
+            return False
 
     def click_random_ext(self):
         if self.random_ext_check.get() == 1:
@@ -92,13 +177,21 @@ class TextFileCreateUI:
         self.exe_button1['text'] = '执行'
 
     def check_input_and_execute(self):
+        if not self.check_path_entry_input():
+            return
+        if not self.check_file_create_time_entry_input():
+            return
+        if not self.check_file_access_time_entry_input():
+            return
+        if not self.check_file_modify_time_entry_input():
+            return
 
         self.executing()
         self.text1.delete(1.0, END)
-        count = self.count_entry.get()
-        size = self.size_entry.get()
-        same_bytes = self.same_bytes_entry.get()
-        dir_level = self.dir_level_entry.get()
+        count = int(self.count_entry.get())
+        size = int(self.size_entry.get())
+        same_bytes = int(self.same_bytes_entry.get())
+        dir_level = int(self.dir_level_entry.get())
         file_create_time = self.file_create_time_entry.get()
         file_modify_time = self.file_modify_time_entry.get()
         file_access_time = self.file_access_time_entry.get()
@@ -108,63 +201,13 @@ class TextFileCreateUI:
             file_modify_time = None
         if file_access_time == self.desc2:
             file_access_time = None
-
-        try:
-            count = int(count)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='输入文件个数错误！')
-            self.done()
-            return
         if not same_bytes:
             same_bytes = 0
-        try:
-            same_bytes = int(same_bytes)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='输入头部相同字节数错误！')
-            self.done()
-            return
-        try:
-            size = int(size)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='输入文件大小错误！')
-            self.done()
-            return
-        try:
-            get_time_struct(file_create_time)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件创建时间格式错误！')
-            self.done()
-            return
-        try:
-            get_time_struct(file_modify_time)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件修改时间格式错误！')
-            self.done()
-            return
-        try:
-            get_time_struct(file_access_time)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件访问时间格式错误！')
-            self.done()
-            return
-        try:
-            if dir_level == self.desc1:
-                dir_level = None
-            else:
-                dir_level = int(dir_level)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件目录层级输入错误')
-            self.done()
-            return
         base_paths = self.path_entry.get()
         if self.random_ext_check.get() == 1:
             ext = 'random'
         else:
             ext = self.ext_entry.get()
-        if ':' not in base_paths:
-            messagebox.showinfo(title='温馨提示', message='基础路径错误！')
-            self.done()
-            return
         try:
             if not same_bytes:
                 ret = create_duplicate_files(count, size, base_paths=base_paths,
@@ -192,7 +235,7 @@ class CopyFileUI:
         Label(master, text="复制数量：").grid(row=18)
         Label(master, text="文件存放基础路径：").grid(row=20)
         Label(master, text="文件存放目录层级：").grid(row=22)
-        Label(master, text="是否修改文件名：").grid(row=24)
+        # Label(master, text="是否修改文件名：").grid(row=24)
 
         self.entry1 = Entry(master, width=38)
         self.entry2 = Entry(master, width=38)
@@ -204,19 +247,10 @@ class CopyFileUI:
         self.entry3.insert(0, BASE_PATHS)
         self.entry4.grid(row=22, column=1, pady=5)
 
-        self.yes = IntVar()
-        self.yes.set(0)
-        self.no = IntVar()
-        self.no.set(0)
-
-        radio_button1 = Checkbutton(master, text='是', variable=self.yes, onvalue=1, offvalue=0,
-                                    command=lambda: radio_button2.deselect() if self.no.get() == 1 else 0)
-        radio_button2 = Checkbutton(master, text='否', variable=self.no, onvalue=1, offvalue=0,
-                                    command=lambda: radio_button1.deselect() if self.yes.get() == 1 else 0)
-        radio_button1.grid(row=24, column=1)
-        radio_button2.grid(row=24, column=2)
-        radio_button2.select()
-
+        self.flag_modify_file_name = IntVar()
+        self.flag_modify_file_name.set(0)
+        Checkbutton(master, text='修改文件名', variable=self.flag_modify_file_name, onvalue=1, offvalue=0).grid(row=24,
+                                                                                                           column=0)
         self.exe_button2 = Button(master, text='执行', bg='#f0f0f0', width=8, height=1,
                                   command=lambda: Thread(target=self.check_input_and_execute, daemon=True).start())
         self.exe_button2.grid(row=18, column=5, padx=4)
@@ -266,7 +300,7 @@ class CopyFileUI:
         depth = self.entry4.get()
         try:
             ret = copy_file(path, count, base_dir, True, depth
-                            ) if self.yes.get() else copy_file(path, count, base_dir, False, depth)
+                            ) if self.flag_modify_file_name.get() else copy_file(path, count, base_dir, False, depth)
             if not ret:
                 return
             s = ''
@@ -369,10 +403,10 @@ class MainUI:
         y = (self.hs / 2) - (self.height / 2)
         self.tk.geometry('%dx%d+%d+%d' % (self.width, self.height, x, y))
 
-        self.frame1 = Frame(self.tk)
-        self.frame_text_file_create_ui = Frame(self.tk)
-        self.frame_copy_file_ui = Frame(self.tk)
-        self.frame_attr_ui = Frame(self.tk)
+        self.frame1 = LabelFrame(self.tk)
+        self.frame_text_file_create_ui = LabelFrame(self.tk)
+        self.frame_copy_file_ui = LabelFrame(self.tk)
+        self.frame_attr_ui = LabelFrame(self.tk)
         TextFileCreateUI(self.frame_text_file_create_ui)
         CopyFileUI(self.frame_copy_file_ui)
         ModifyFileAttrUI(self.frame_attr_ui)
@@ -385,7 +419,7 @@ class MainUI:
         Radiobutton(self.frame1, text="修改文件属性", command=lambda: self.change_tab(2), width=10, variable=tag, value=2,
                     bd=1, indicatoron=False).pack(side=LEFT)
         self.frame1.pack(padx=10, fill='x')
-        Separator(self.tk, orient=HORIZONTAL).pack(padx=13, pady=8, fill='x', side=TOP)
+        # Separator(self.tk, orient=HORIZONTAL).pack(padx=13, pady=8, fill='x', side=TOP)
         self.frame_text_file_create_ui.pack()
         self.tk.mainloop()
 
