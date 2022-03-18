@@ -1,4 +1,3 @@
-import traceback
 from threading import Thread
 from tkinter import Tk, Label, Entry, Button, IntVar, Checkbutton, Frame, Radiobutton, StringVar, messagebox
 from tkinter.constants import TOP, END, HORIZONTAL, LEFT, DISABLED, NORMAL
