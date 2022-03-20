@@ -127,10 +127,10 @@ def create_same_head_files(
     left_size = file_size_bytes - head_same_bytes
 
     if left_size > one_mb:
-        def do_work():
+        def do_work(file_name_):
             new_same_head = text_same_head + next(gen_letter)
             real_left_size = left_size - 1
-            with open(file_name, 'a') as f0:
+            with open(file_name_, 'a') as f0:
                 f0.write(new_same_head)
                 size_n = real_left_size // one_mb
                 size_m = real_left_size % one_mb
@@ -143,7 +143,7 @@ def create_same_head_files(
         with ThreadPoolExecutor(max_workers=file_count) as exe:
             futures = []
             for file_name in files:
-                futures.append(exe.submit(do_work))
+                futures.append(exe.submit(do_work, file_name))
             for _ in as_completed(futures):
                 pass
     else:
