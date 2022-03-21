@@ -146,6 +146,8 @@ def create_same_head_files(
                 futures.append(exe.submit(do_work, file_name))
             for _ in as_completed(futures):
                 pass
+        # for file_name in files:
+        #     do_work(file_name)
     else:
         for file_name in files:
             s = F.pystr(left_size - 1, left_size - 1)

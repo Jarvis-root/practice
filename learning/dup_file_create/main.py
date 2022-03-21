@@ -1,4 +1,3 @@
-import traceback
 from threading import Thread
 from tkinter import Tk, Button, IntVar, Checkbutton, Radiobutton, StringVar, messagebox
 from tkinter.constants import END, LEFT, DISABLED, NORMAL, HORIZONTAL
@@ -59,17 +58,21 @@ class TextFileCreateUI:
         self.file_create_time_entry.insert(0, self.desc2)
         self.file_modify_time_entry.insert(0, self.desc2)
         self.file_access_time_entry.insert(0, self.desc2)
+        self.random_dir_level = IntVar()
+        self.random_dir_level.set(0)
+        Checkbutton(master, text="随机", variable=self.random_dir_level, onvalue=1, offvalue=0,
+                    command=self.click_random_dir_level).grid(row=10, column=2)
         self.random_ext_check = IntVar()
         self.random_ext_check.set(0)
-        Checkbutton(master, text="随机扩展名", variable=self.random_ext_check, onvalue=1, offvalue=0,
-                    command=self.click_random_ext).grid(row=20, column=0)
+        Checkbutton(master, text="随机", variable=self.random_ext_check, onvalue=1, offvalue=0,
+                    command=self.click_random_ext).grid(row=18, column=2)
 
         self.exe_button1 = Button(master, text='执行', bg='#f0f0f0', width=8, height=1,
                                   command=lambda: Thread(target=self.check_input_and_execute, daemon=True).start())
         self.exe_button1.grid(row=10, column=5, padx=4)
 
-        Button(master, text='选择目录', bg='#f0f0f0', width=8, height=1,
-               command=self.select_dir).grid(row=8, column=5, padx=4)
+        Button(master, text='选择', bg='#f0f0f0', width=4, height=1,
+               command=self.select_dir).grid(row=8, column=2, padx=4)
         self.text1 = ScrolledText(master, width=75, height=15)
         self.text1.grid(row=30, column=0, columnspan=10)
         self.progress_bar = Progressbar(master, length=535, orient=HORIZONTAL, mode='determinate')
@@ -154,6 +157,13 @@ class TextFileCreateUI:
             self.extension.set(EXTENSION)
             self.ext_entry['state'] = NORMAL
 
+    def click_random_dir_level(self):
+        if self.random_dir_level.get() == 1:
+            self.dir_level_entry.set('')
+            self.dir_level_entry['state'] = DISABLED
+        elif self.random_dir_level.get() == 0:
+            self.dir_level_entry['state'] = NORMAL
+
     def select_dir(self):
         selected_path = self.path_entry.get()
         directory = askdirectory()
@@ -227,12 +237,15 @@ class TextFileCreateUI:
             messagebox.showinfo(title='温馨提示', message='文件访问时间格式错误！')
             self.done()
             return
-        try:
-            dir_level = int(dir_level)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件目录层级输入错误')
-            self.done()
-            return
+        if self.random_dir_level.get():
+            dir_level = None
+        else:
+            try:
+                dir_level = int(dir_level)
+            except ValueError:
+                messagebox.showinfo(title='温馨提示', message='文件目录层级输入错误')
+                self.done()
+                return
         base_paths = self.path_entry.get()
         if self.random_ext_check.get() == 1:
             ext = 'random'
@@ -253,10 +266,7 @@ class TextFileCreateUI:
             for file in ret:
                 s = s + file + '\n'
                 if any([file_create_time, file_modify_time, file_access_time]):
-                    try:
-                        modify_file_time(file, file_create_time, file_modify_time, file_access_time)
-                    except:
-                        traceback.print_exc()
+                    modify_file_time(file, file_create_time, file_modify_time, file_access_time)
             self.text1.insert(END, s)
             # messagebox.showinfo(title='温馨提示', message='执行成功')
         except Exception as e:
