@@ -3,6 +3,7 @@ import time
 
 import win32timezone  # 这个不能去掉，否则pyinstaller打的包有问题
 from win32file import *
+from dup_file_create import F
 
 
 def modify_file_time(file_path, create_time=None, modify_time=None, access_time=None):
@@ -25,6 +26,18 @@ def modify_file_time(file_path, create_time=None, modify_time=None, access_time=
         SetFileTime(fh, None, datetime.datetime(*a_time_t[:6]), None)
     # createTimes, accessTimes, modifyTimes = GetFileTime(fh)
     # print(createTimes, accessTimes, modifyTimes)
+    CloseHandle(fh)
+    return True
+
+
+def random_file_time(file_path, random_create_time=False, random_modify_time=False, random_access_time=False):
+    fh = CreateFile(file_path, GENERIC_READ | GENERIC_WRITE, 0, None, OPEN_EXISTING, 0, 0)
+    if random_create_time:
+        SetFileTime(fh, F.date_time_this_century(), None, None)
+    if random_modify_time:
+        SetFileTime(fh, None, F.date_time_this_century(), None)
+    if random_access_time:
+        SetFileTime(fh, None, None, F.date_time_this_century())
     CloseHandle(fh)
     return True
 

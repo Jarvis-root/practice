@@ -2,13 +2,11 @@ import os
 import random
 import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from string import ascii_letters
 
 from faker import Faker
 
 F = Faker()
 # Faker.seed(0)
-# print(F.pystr(5, 5))
 BASE_PATHS = 'D:\\TEST'
 EXTENSION = 'test-duplicate'
 ONE_KB = 1024
@@ -33,11 +31,6 @@ def yield_base_path(base_paths: str):
     p = base_paths.split(';')
     while True:
         yield random.choice(p)
-
-
-def yield_letter():
-    for n in ascii_letters:
-        yield n
 
 
 def create_duplicate_files(file_count,
@@ -65,20 +58,20 @@ def create_duplicate_files(file_count,
             os.makedirs(d)
         files.append(file_name)
 
-    text_one_mb = F.pystr(ONE_MB, ONE_MB)
+    bytes_one_mb = F.binary(ONE_MB)
     size_n = file_size_bytes // ONE_MB
     size_m = file_size_bytes % ONE_MB
     # 创建第一个文件，后面的文件拷贝第一个
     if file_size_bytes > ONE_MB:  # 大于1MB，使用a模式写，避免占用大量内存
-        with open(files[0], 'a') as f:
+        with open(files[0], 'ab') as f:
             for _ in range(size_n):
-                f.write(text_one_mb)
+                f.write(bytes_one_mb)
             if size_m:
-                f.write(text_one_mb[:size_m])
+                f.write(bytes_one_mb[:size_m])
     else:
-        text = F.pystr(file_size_bytes, file_size_bytes)
-        with open(files[0], 'w') as f:
-            f.write(text)
+        b = F.binary(file_size_bytes)
+        with open(files[0], 'wb') as f:
+            f.write(b)
     if file_count > 1:
         with ThreadPoolExecutor(max_workers=file_count - 1) as exe:
             futures = []
@@ -100,9 +93,8 @@ def create_same_head_files(
         dir_depth: int = None,
 ):
     assert file_size_bytes >= head_same_bytes, '头部字节数不能大于文件大小'
-    assert 52 >= file_count, '指定头部字节相同时，每次最大只能创建52个文件'
+    # assert 52 >= file_count, '指定头部字节相同时，每次最大只能创建52个文件'
     files = []
-    gen_letter = yield_letter()
     gen_base_path = yield_base_path(base_paths)
     one_mb = 1048576
 
@@ -123,22 +115,20 @@ def create_same_head_files(
             os.makedirs(d)
         files.append(file_name)
 
-    text_same_head = F.pystr(head_same_bytes, head_same_bytes)
+    bytes_same_head = F.binary(head_same_bytes)
     left_size = file_size_bytes - head_same_bytes
 
     if left_size > one_mb:
         def do_work(file_name_):
-            new_same_head = text_same_head + next(gen_letter)
-            real_left_size = left_size - 1
-            with open(file_name_, 'a') as f0:
-                f0.write(new_same_head)
-                size_n = real_left_size // one_mb
-                size_m = real_left_size % one_mb
-                text_one_mb = F.pystr(one_mb, one_mb)
+            with open(file_name_, 'ab') as f0:
+                f0.write(bytes_same_head)
+                size_n = left_size // one_mb
+                size_m = left_size % one_mb
+                bytes_one_mb = F.binary(one_mb)
                 for _ in range(size_n):
-                    f0.write(text_one_mb)
+                    f0.write(bytes_one_mb)
                 if size_m:
-                    f0.write(text_one_mb[:size_m])
+                    f0.write(bytes_one_mb[:size_m])
 
         with ThreadPoolExecutor(max_workers=file_count) as exe:
             futures = []
@@ -150,11 +140,10 @@ def create_same_head_files(
         #     do_work(file_name)
     else:
         for file_name in files:
-            s = F.pystr(left_size - 1, left_size - 1)
-            new_text_same_head = text_same_head + next(gen_letter)
-            text = new_text_same_head + s
-            with open(file_name, 'w') as f:
-                f.write(text)
+            s = F.binary(left_size)
+            b = bytes_same_head + s
+            with open(file_name, 'wb') as f:
+                f.write(b)
 
     # with open(files[0]) as f, open(files[1]) as f1:
     #     # assert len(f.read()) == len(f1.read())

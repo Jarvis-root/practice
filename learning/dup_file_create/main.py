@@ -53,11 +53,12 @@ class TextFileCreateUI:
         self.file_access_time_entry.grid(row=16, column=1, pady=3)
         self.ext_entry.grid(row=18, column=1, pady=3)
 
-        self.desc2 = '格式：2019-02-02 00:01:02'
-        # path_entry.insert(0, BASE_PATHS)
-        self.file_create_time_entry.insert(0, self.desc2)
-        self.file_modify_time_entry.insert(0, self.desc2)
-        self.file_access_time_entry.insert(0, self.desc2)
+        self.desc2 = '默认当前时间'
+        self.desc3 = '格式：2019-02-02 00:01:02'
+
+        self.file_create_time_entry['state'] = DISABLED
+        self.file_modify_time_entry['state'] = DISABLED
+        self.file_access_time_entry['state'] = DISABLED
         self.random_dir_level = IntVar()
         self.random_dir_level.set(0)
         Checkbutton(master, text="随机", variable=self.random_dir_level, onvalue=1, offvalue=0,
@@ -66,6 +67,18 @@ class TextFileCreateUI:
         self.random_ext_check.set(0)
         Checkbutton(master, text="随机", variable=self.random_ext_check, onvalue=1, offvalue=0,
                     command=self.click_random_ext).grid(row=18, column=2)
+        self.random_create_time = IntVar()
+        self.random_create_time.set(1)
+        Checkbutton(master, text="随机", variable=self.random_create_time, onvalue=1, offvalue=0,
+                    command=self.click_random_create_time).grid(row=12, column=2)
+        self.random_modify_time = IntVar()
+        self.random_modify_time.set(1)
+        Checkbutton(master, text="随机", variable=self.random_modify_time, onvalue=1, offvalue=0,
+                    command=self.click_random_modify_time).grid(row=14, column=2)
+        self.random_access_time = IntVar()
+        self.random_access_time.set(1)
+        Checkbutton(master, text="随机", variable=self.random_access_time, onvalue=1, offvalue=0,
+                    command=self.click_random_access_time).grid(row=16, column=2)
 
         self.exe_button1 = Button(master, text='执行', bg='#f0f0f0', width=8, height=1,
                                   command=lambda: Thread(target=self.check_input_and_execute, daemon=True).start())
@@ -157,6 +170,30 @@ class TextFileCreateUI:
             self.extension.set(EXTENSION)
             self.ext_entry['state'] = NORMAL
 
+    def click_random_create_time(self):
+        if self.random_create_time.get() == 1:
+            self.file_create_time_entry.delete(0, END)
+            self.file_create_time_entry['state'] = DISABLED
+        elif self.random_create_time.get() == 0:
+            self.file_create_time_entry['state'] = NORMAL
+            self.file_create_time_entry.insert(0, self.desc2)
+
+    def click_random_modify_time(self):
+        if self.random_modify_time.get() == 1:
+            self.file_modify_time_entry.delete(0, END)
+            self.file_modify_time_entry['state'] = DISABLED
+        elif self.random_modify_time.get() == 0:
+            self.file_modify_time_entry['state'] = NORMAL
+            self.file_modify_time_entry.insert(0, self.desc2)
+
+    def click_random_access_time(self):
+        if self.random_access_time.get() == 1:
+            self.file_access_time_entry.delete(0, END)
+            self.file_access_time_entry['state'] = DISABLED
+        elif self.random_access_time.get() == 0:
+            self.file_access_time_entry['state'] = NORMAL
+            self.file_access_time_entry.insert(0, self.desc2)
+
     def click_random_dir_level(self):
         if self.random_dir_level.get() == 1:
             self.dir_level_entry.set('')
@@ -189,6 +226,9 @@ class TextFileCreateUI:
         size = self.size_entry.get()
         same_bytes = self.same_bytes_entry.get()
         dir_level = self.dir_level_entry.get()
+        random_create_time = self.random_create_time.get()
+        random_modify_time = self.random_modify_time.get()
+        random_access_time = self.random_access_time.get()
         file_create_time = self.file_create_time_entry.get()
         file_modify_time = self.file_modify_time_entry.get()
         file_access_time = self.file_access_time_entry.get()
@@ -198,6 +238,7 @@ class TextFileCreateUI:
             file_modify_time = None
         if file_access_time == self.desc2:
             file_access_time = None
+
 
         try:
             count = int(count)
@@ -219,24 +260,24 @@ class TextFileCreateUI:
             messagebox.showinfo(title='温馨提示', message='输入文件大小错误！')
             self.done()
             return
-        try:
-            get_time_struct(file_create_time)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件创建时间格式错误！')
-            self.done()
-            return
-        try:
-            get_time_struct(file_modify_time)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件修改时间格式错误！')
-            self.done()
-            return
-        try:
-            get_time_struct(file_access_time)
-        except ValueError:
-            messagebox.showinfo(title='温馨提示', message='文件访问时间格式错误！')
-            self.done()
-            return
+        # try:
+        #     get_time_struct(file_create_time)
+        # except ValueError:
+        #     messagebox.showinfo(title='温馨提示', message='文件创建时间格式错误！')
+        #     self.done()
+        #     return
+        # try:
+        #     get_time_struct(file_modify_time)
+        # except ValueError:
+        #     messagebox.showinfo(title='温馨提示', message='文件修改时间格式错误！')
+        #     self.done()
+        #     return
+        # try:
+        #     get_time_struct(file_access_time)
+        # except ValueError:
+        #     messagebox.showinfo(title='温馨提示', message='文件访问时间格式错误！')
+        #     self.done()
+        #     return
         if self.random_dir_level.get():
             dir_level = None
         else:
@@ -267,6 +308,8 @@ class TextFileCreateUI:
                 s = s + file + '\n'
                 if any([file_create_time, file_modify_time, file_access_time]):
                     modify_file_time(file, file_create_time, file_modify_time, file_access_time)
+                if any([random_access_time, random_modify_time, random_create_time]):
+                    random_file_time(file, random_create_time, random_modify_time, random_access_time)
             self.text1.insert(END, s)
             # messagebox.showinfo(title='温馨提示', message='执行成功')
         except Exception as e:
