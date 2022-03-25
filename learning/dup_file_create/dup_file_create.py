@@ -33,14 +33,9 @@ def yield_base_path(base_paths: str):
         yield random.choice(p)
 
 
-def create_duplicate_files(file_count,
-                           file_size_bytes,
-                           base_paths=BASE_PATHS,
-                           extension: str = EXTENSION,
-                           dir_depth: int = None):
-    files = []
+def gen_file_names(file_count, extension, base_paths, dir_depth):
     gen_base_path = yield_base_path(base_paths)
-    # 生成文件名：
+    files = []
     for _ in range(file_count):
         if not dir_depth:
             depth = random.randint(1, 5)
@@ -57,7 +52,15 @@ def create_duplicate_files(file_count,
         if not os.path.exists(d):
             os.makedirs(d)
         files.append(file_name)
+    return files
 
+
+def create_duplicate_files(file_count,
+                           file_size_bytes,
+                           base_paths=BASE_PATHS,
+                           extension: str = EXTENSION,
+                           dir_depth: int = None):
+    files = gen_file_names(file_count, extension, base_paths, dir_depth)
     bytes_one_mb = F.binary(ONE_MB)
     size_n = file_size_bytes // ONE_MB
     size_m = file_size_bytes % ONE_MB
@@ -94,27 +97,8 @@ def create_same_head_files(
 ):
     assert file_size_bytes >= head_same_bytes, '头部字节数不能大于文件大小'
     # assert 52 >= file_count, '指定头部字节相同时，每次最大只能创建52个文件'
-    files = []
-    gen_base_path = yield_base_path(base_paths)
+    files = gen_file_names(file_count, extension, base_paths, dir_depth)
     one_mb = 1048576
-
-    for _ in range(file_count):
-        if not dir_depth:
-            depth = random.randint(1, 5)
-        else:
-            depth = int(dir_depth)
-            if depth > 10:
-                depth = 10
-        if extension == 'random':
-            file_path = F.file_path(depth=depth)
-        else:
-            file_path = F.file_path(depth=depth, extension=extension)
-        file_name = f'{next(gen_base_path)}{file_path}'.replace('/', '\\')
-        d = os.path.dirname(file_name)
-        if not os.path.exists(d):
-            os.makedirs(d)
-        files.append(file_name)
-
     bytes_same_head = F.binary(head_same_bytes)
     left_size = file_size_bytes - head_same_bytes
 
