@@ -1,9 +1,9 @@
 from threading import Thread
-from tkinter import Tk, Button, IntVar, Checkbutton, Radiobutton, StringVar, messagebox
-from tkinter.constants import END, LEFT, DISABLED, NORMAL, HORIZONTAL
+from tkinter import Tk, Button, IntVar, Checkbutton, StringVar, messagebox
+from tkinter.constants import END, DISABLED, NORMAL, HORIZONTAL
 from tkinter.filedialog import askdirectory, askopenfilename
 from tkinter.scrolledtext import ScrolledText
-from tkinter.ttk import Entry, LabelFrame, Spinbox, Label, Progressbar
+from tkinter.ttk import Entry, LabelFrame, Spinbox, Label, Progressbar, Notebook
 
 from dup_file_create import *
 from file_time import *
@@ -86,9 +86,9 @@ class TextFileCreateUI:
 
         Button(master, text='选择', bg='#f0f0f0', width=4, height=1,
                command=self.select_dir).grid(row=8, column=2, padx=4)
-        self.text1 = ScrolledText(master, width=75, height=15)
+        self.text1 = ScrolledText(master, width=70, height=15)
         self.text1.grid(row=30, column=0, columnspan=10)
-        self.progress_bar = Progressbar(master, length=535, orient=HORIZONTAL, mode='determinate')
+        self.progress_bar = Progressbar(master, length=500, orient=HORIZONTAL, mode='determinate')
         self.progress_bar.grid(row=26, column=0, columnspan=10)
 
     def check_count_entry_input(self):
@@ -239,7 +239,6 @@ class TextFileCreateUI:
         if file_access_time == self.desc2:
             file_access_time = None
 
-
         try:
             count = int(count)
         except ValueError:
@@ -348,8 +347,10 @@ class CopyFileUI:
                command=self.select_file).grid(row=16, column=5, padx=4)
         Button(master, text='选择路径', bg='#f0f0f0', width=8, height=1,
                command=self.select_path).grid(row=20, column=5, padx=4)
-        self.text1 = ScrolledText(master, width=75, height=25)
-        self.text1.grid(row=25, column=0, columnspan=10)
+        self.text1 = ScrolledText(master, width=70, height=25)
+        self.text1.grid(row=27, column=0, columnspan=10)
+        self.progress_bar = Progressbar(master, length=500, orient=HORIZONTAL, mode='determinate')
+        self.progress_bar.grid(row=25, column=0, columnspan=10)
 
     def select_file(self):
         file = askopenfilename()
@@ -427,7 +428,7 @@ class ModifyFileAttrUI:
 
         Button(master, text='执行', bg='#f0f0f0', width=8, height=1,
                command=self.execute).grid(row=6, column=2, padx=4)
-        self.text1 = ScrolledText(master, width=75, height=15)
+        self.text1 = ScrolledText(master, width=70, height=28)
         self.text1.grid(row=26, column=0, columnspan=10)
         Button(master, text='选择文件', bg='#f0f0f0', width=8, height=1,
                command=self.select_file).grid(row=2, column=2, padx=4)
@@ -493,7 +494,7 @@ class MainUI:
         y = (self.hs / 2) - (self.height / 2)
         self.tk.geometry('%dx%d+%d+%d' % (self.width, self.height, x, y))
 
-        self.frame1 = LabelFrame(self.tk)
+        self.notebook = Notebook(self.tk)
         self.frame_text_file_create_ui = LabelFrame(self.tk)
         self.frame_copy_file_ui = LabelFrame(self.tk)
         self.frame_attr_ui = LabelFrame(self.tk)
@@ -501,29 +502,11 @@ class MainUI:
         CopyFileUI(self.frame_copy_file_ui)
         ModifyFileAttrUI(self.frame_attr_ui)
 
-        tag = IntVar()
-        Radiobutton(self.frame1, text="指定大小创建", command=lambda: self.change_tab(0), width=11, variable=tag, value=0,
-                    bd=1, indicatoron=False).pack(side=LEFT)
-        Radiobutton(self.frame1, text="拷贝多份文件", command=lambda: self.change_tab(1), width=10, variable=tag, value=1,
-                    bd=1, indicatoron=False).pack(side=LEFT)
-        Radiobutton(self.frame1, text="修改文件属性", command=lambda: self.change_tab(2), width=10, variable=tag, value=2,
-                    bd=1, indicatoron=False).pack(side=LEFT)
-        self.frame1.pack(padx=10, fill='x')
-        # Separator(self.tk, orient=HORIZONTAL).pack(padx=13, pady=8, fill='x', side=TOP)
-        self.frame_text_file_create_ui.pack()
+        self.notebook.add(self.frame_text_file_create_ui, text='指定大小创建')
+        self.notebook.add(self.frame_copy_file_ui, text='拷贝多份文件')
+        self.notebook.add(self.frame_attr_ui, text='修改文件属性')
+        self.notebook.pack(padx=10, fill='x')
         self.tk.mainloop()
-
-    def change_tab(self, tag):
-
-        self.frame_text_file_create_ui.pack_forget()
-        self.frame_copy_file_ui.pack_forget()
-        self.frame_attr_ui.pack_forget()
-        if tag == 0:
-            self.frame_text_file_create_ui.pack()
-        elif tag == 1:
-            self.frame_copy_file_ui.pack()
-        elif tag == 2:
-            self.frame_attr_ui.pack()
 
 
 if __name__ == '__main__':
