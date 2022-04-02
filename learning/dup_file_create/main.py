@@ -9,7 +9,7 @@ from dup_file_create import *
 from file_time import *
 
 
-class TextFileCreateUI:
+class DupFileCreateUI:
 
     def __init__(self, master):
         Label(master, text="文件个数*：").grid(row=2, column=0)
@@ -22,10 +22,13 @@ class TextFileCreateUI:
         Label(master, text="文件访问时间：").grid(row=16, column=0)
         ext_label = Label(master, text="扩展名：")
         ext_label.grid(row=18, column=0)
+        filename_label = Label(master, text="文件名：")
+        filename_label.grid(row=20, column=0)
 
         self.extension = StringVar()
         self.extension.set(EXTENSION)
         self.ext_entry = Entry(master, width=30, textvariable=self.extension)
+        self.filename_entry = Entry(master, width=30)
 
         self.count_entry = Spinbox(master, width=28, validate='focusout',
                                    validatecommand=self.check_count_entry_input, from_=1, to=100)
@@ -52,6 +55,7 @@ class TextFileCreateUI:
         self.file_modify_time_entry.grid(row=14, column=1, pady=3)
         self.file_access_time_entry.grid(row=16, column=1, pady=3)
         self.ext_entry.grid(row=18, column=1, pady=3)
+        self.filename_entry.grid(row=20, column=1, pady=3)
 
         self.desc2 = '默认当前时间'
         self.desc3 = '格式：2019-02-02 00:01:02'
@@ -64,9 +68,15 @@ class TextFileCreateUI:
         Checkbutton(master, text="随机", variable=self.random_dir_level, onvalue=1, offvalue=0,
                     command=self.click_random_dir_level).grid(row=10, column=2)
         self.random_ext_check = IntVar()
-        self.random_ext_check.set(0)
+        self.random_ext_check.set(1)
+        self.click_random_ext()
         Checkbutton(master, text="随机", variable=self.random_ext_check, onvalue=1, offvalue=0,
                     command=self.click_random_ext).grid(row=18, column=2)
+        self.random_filename_check = IntVar()
+        self.random_filename_check.set(1)
+        self.click_filename_ext()
+        Checkbutton(master, text="随机", variable=self.random_filename_check, onvalue=1, offvalue=0,
+                    command=self.click_filename_ext).grid(row=20, column=2)
         self.random_create_time = IntVar()
         self.random_create_time.set(1)
         Checkbutton(master, text="随机", variable=self.random_create_time, onvalue=1, offvalue=0,
@@ -169,6 +179,12 @@ class TextFileCreateUI:
         elif self.random_ext_check.get() == 0:
             self.extension.set(EXTENSION)
             self.ext_entry['state'] = NORMAL
+
+    def click_filename_ext(self):
+        if self.random_filename_check.get() == 1:
+            self.filename_entry['state'] = DISABLED
+        elif self.random_filename_check.get() == 0:
+            self.filename_entry['state'] = NORMAL
 
     def click_random_create_time(self):
         if self.random_create_time.get() == 1:
@@ -291,6 +307,10 @@ class TextFileCreateUI:
             ext = 'random'
         else:
             ext = self.ext_entry.get()
+        if self.random_filename_check.get():
+            filename = None
+        else:
+            filename = self.filename_entry.get()
         if ':' not in base_paths:
             messagebox.showinfo(title='温馨提示', message='基础路径错误！')
             self.done()
@@ -298,10 +318,10 @@ class TextFileCreateUI:
         try:
             if not same_bytes:
                 ret = create_duplicate_files(count, size, base_paths=base_paths,
-                                             extension=ext, dir_depth=dir_level)
+                                             extension=ext, filename=filename, dir_depth=dir_level)
             else:
                 ret = create_same_head_files(count, size, same_bytes, base_paths=base_paths,
-                                             extension=ext, dir_depth=dir_level)
+                                             extension=ext, filename=filename, dir_depth=dir_level)
             s = ''
             for file in ret:
                 s = s + file + '\n'
@@ -498,7 +518,7 @@ class MainUI:
         self.frame_text_file_create_ui = LabelFrame(self.tk)
         self.frame_copy_file_ui = LabelFrame(self.tk)
         self.frame_attr_ui = LabelFrame(self.tk)
-        TextFileCreateUI(self.frame_text_file_create_ui)
+        DupFileCreateUI(self.frame_text_file_create_ui)
         CopyFileUI(self.frame_copy_file_ui)
         ModifyFileAttrUI(self.frame_attr_ui)
 
