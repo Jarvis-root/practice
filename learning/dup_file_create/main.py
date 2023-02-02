@@ -702,14 +702,15 @@ class PictureTransformUI:
         self.entry1 = Entry(master, width=38)
         self.entry2 = Entry(master, width=38)
         self.entry3 = Entry(master, width=38)
-        # self.entry4 = Entry(master, width=38)
         self.entry1.grid(row=16, column=1, pady=5)
         self.entry2.grid(row=18, column=1, pady=5)
         self.entry3.grid(row=20, column=1, pady=5)
         self.entry3.insert(0, '按照支持的所有变换方式进行变换，不支持指定')
         self.entry3['state'] = DISABLED
-        # self.entry4.grid(row=22, column=1, pady=5)
-        # self.entry4.insert(0, 'jpg')
+        self.keep_exif = IntVar()
+        self.keep_exif.set(0)
+        Checkbutton(master, text="是否保留Exif", variable=self.keep_exif, onvalue=1, offvalue=0, takefocus=True
+                    ).grid(row=22, column=0)
 
         self.exe_button2 = Button(master, text='执行', bg='#f0f0f0', width=8, height=1,
                                   command=lambda: Thread(target=self.check_input_and_execute, daemon=True).start())
@@ -748,6 +749,9 @@ class PictureTransformUI:
 
     def execute(self):
         output_path = self.entry2.get()
+        keep_exif = False
+        if self.keep_exif.get():
+            keep_exif = True
         if ':' not in output_path:
             messagebox.showinfo(title='温馨提示', message='保存路径错误！')
             self.done()
@@ -770,26 +774,27 @@ class PictureTransformUI:
                 f = f'{root}/{file}'
                 what = imghdr.what(f)
                 if what:
-                    s = picture_transform.gamma_trans(f, output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.rotate_image(f, '0', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.rotate_image(f, '1', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.rotate_image(f, '2', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.rotate_image(f, '3', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.rotate_image(f, '4', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.convert_image(f, 'greener', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.convert_image(f, 'gery', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.convert_image(f, 'other', output_path=output_path)
-                    self.insert_to_text(s)
-                    s = picture_transform.resize_image(f, output_path=output_path)
-                    self.insert_to_text(s)
+                    picture_transform.gamma_trans(f, output_path, keep_exif=keep_exif, callback=self.insert_to_text)
+                    picture_transform.rotate_image(f, '0', output_path=output_path, keep_exif=keep_exif,
+                                                   callback=self.insert_to_text)
+                    picture_transform.rotate_image(f, '1', output_path=output_path, keep_exif=keep_exif,
+                                                   callback=self.insert_to_text)
+                    picture_transform.rotate_image(f, '2', output_path=output_path, keep_exif=keep_exif,
+                                                   callback=self.insert_to_text)
+                    picture_transform.rotate_image(f, '3', output_path=output_path, keep_exif=keep_exif,
+                                                   callback=self.insert_to_text)
+                    picture_transform.rotate_image(f, '4', output_path=output_path, keep_exif=keep_exif,
+                                                   callback=self.insert_to_text)
+                    picture_transform.convert_image(f, 'greener', output_path=output_path, keep_exif=keep_exif,
+                                                    callback=self.insert_to_text)
+                    picture_transform.convert_image(f, 'gray', output_path=output_path, keep_exif=keep_exif,
+                                                    callback=self.insert_to_text)
+                    picture_transform.convert_image(f, 'no_color', output_path=output_path, keep_exif=keep_exif,
+                                                    callback=self.insert_to_text)
+                    picture_transform.convert_image(f, 'other', output_path=output_path, keep_exif=keep_exif,
+                                                    callback=self.insert_to_text)
+                    picture_transform.resize_image(f, output_path=output_path, keep_exif=keep_exif,
+                                                   callback=self.insert_to_text)
 
     def check_input_and_execute(self):
         print('check_input_and_execute')
@@ -806,6 +811,7 @@ class PictureTransformUI:
             except Exception as e:
                 s = str(e)
                 self.insert_to_text(s)
+                raise
             self.done()
         finally:
             self.execute_flag = False
