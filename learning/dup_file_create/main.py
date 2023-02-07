@@ -1,3 +1,4 @@
+import traceback
 from threading import Thread
 from tkinter import Tk, Button, IntVar, Checkbutton, StringVar, messagebox
 from tkinter.constants import END, DISABLED, NORMAL, HORIZONTAL
@@ -774,27 +775,32 @@ class PictureTransformUI:
                 f = f'{root}/{file}'
                 what = imghdr.what(f)
                 if what:
-                    picture_transform.gamma_trans(f, output_path, keep_exif=keep_exif, callback=self.insert_to_text)
-                    picture_transform.rotate_image(f, '0', output_path=output_path, keep_exif=keep_exif,
-                                                   callback=self.insert_to_text)
-                    picture_transform.rotate_image(f, '1', output_path=output_path, keep_exif=keep_exif,
-                                                   callback=self.insert_to_text)
-                    picture_transform.rotate_image(f, '2', output_path=output_path, keep_exif=keep_exif,
-                                                   callback=self.insert_to_text)
-                    picture_transform.rotate_image(f, '3', output_path=output_path, keep_exif=keep_exif,
-                                                   callback=self.insert_to_text)
-                    picture_transform.rotate_image(f, '4', output_path=output_path, keep_exif=keep_exif,
-                                                   callback=self.insert_to_text)
-                    picture_transform.convert_image(f, 'greener', output_path=output_path, keep_exif=keep_exif,
-                                                    callback=self.insert_to_text)
-                    picture_transform.convert_image(f, 'gray', output_path=output_path, keep_exif=keep_exif,
-                                                    callback=self.insert_to_text)
-                    picture_transform.convert_image(f, 'no_color', output_path=output_path, keep_exif=keep_exif,
-                                                    callback=self.insert_to_text)
-                    picture_transform.convert_image(f, 'other', output_path=output_path, keep_exif=keep_exif,
-                                                    callback=self.insert_to_text)
-                    picture_transform.resize_image(f, output_path=output_path, keep_exif=keep_exif,
-                                                   callback=self.insert_to_text)
+                    try:
+                        picture_transform.gamma_trans(f, output_path, keep_exif=keep_exif, callback=self.insert_to_text)
+                        picture_transform.rotate_image(f, '0', output_path=output_path, keep_exif=keep_exif,
+                                                       callback=self.insert_to_text)
+                        picture_transform.rotate_image(f, '1', output_path=output_path, keep_exif=keep_exif,
+                                                       callback=self.insert_to_text)
+                        picture_transform.rotate_image(f, '2', output_path=output_path, keep_exif=keep_exif,
+                                                       callback=self.insert_to_text)
+                        picture_transform.rotate_image(f, '3', output_path=output_path, keep_exif=keep_exif,
+                                                       callback=self.insert_to_text)
+                        picture_transform.rotate_image(f, '4', output_path=output_path, keep_exif=keep_exif,
+                                                       callback=self.insert_to_text)
+                        picture_transform.convert_image(f, 'greener', output_path=output_path, keep_exif=keep_exif,
+                                                        callback=self.insert_to_text)
+                        picture_transform.convert_image(f, 'gray', output_path=output_path, keep_exif=keep_exif,
+                                                        callback=self.insert_to_text)
+                        picture_transform.convert_image(f, 'no_color', output_path=output_path, keep_exif=keep_exif,
+                                                        callback=self.insert_to_text)
+                        picture_transform.convert_image(f, 'other', output_path=output_path, keep_exif=keep_exif,
+                                                        callback=self.insert_to_text)
+                        picture_transform.resize_image(f, output_path=output_path, keep_exif=keep_exif,
+                                                       callback=self.insert_to_text)
+                    except Exception as e:
+                        s = str(e)
+                        self.insert_to_text(f'文件执行报错：{f}')
+                        traceback.print_exc()
 
     def check_input_and_execute(self):
         print('check_input_and_execute')
@@ -805,15 +811,9 @@ class PictureTransformUI:
             self.execute_flag = True
             self.exe_button2['text'] = '停止'
             self.text1.delete(1.0, END)
-            try:
-                self.execute()
-                # messagebox.showinfo(title='温馨提示', message='执行成功')
-            except Exception as e:
-                s = str(e)
-                self.insert_to_text(s)
-                raise
-            self.done()
+            self.execute()
         finally:
+            self.done()
             self.execute_flag = False
 
 
