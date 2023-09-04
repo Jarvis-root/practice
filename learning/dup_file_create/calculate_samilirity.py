@@ -117,4 +117,5 @@ def stop_task():
 
 
 if __name__ == '__main__':
-    compare_similarity(r'D:/DupPhoto/same/raw111.gif_000000.jpg', r'D:\DupPhoto\same')
+    compare_similarity(r"E:\Program Files (x86)\DingDing\main\current_new\plugins\tblive\data\conf_res\pure_color_res\0F5A54.png",
+                       r'E:\Program Files (x86)\DingDing\main\current_new\plugins\tblive\data\conf_res\pure_color_res')

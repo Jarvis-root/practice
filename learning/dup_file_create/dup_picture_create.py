@@ -4,6 +4,7 @@ import time
 
 import cv2
 import pyautogui
+
 # import win32con
 # import win32gui
 # import win32print
@@ -85,9 +86,6 @@ class Video:
         cap.open(filepath)
         # 获取视频帧数
         n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        # 同样为了避免视频头几帧质量低下，黑屏或者无关等
-        # for i in range(42):
-        #     cap.read()
         file_name = os.path.basename(filepath)
         try:
             for i in range(n_frames):
@@ -114,6 +112,35 @@ class Video:
             return
         self.execute_flag = False
 
+
+def cap_picture(filepath, save_path, frame_interval, pic_format='jpg'):
+    cap = cv2.VideoCapture()
+    # VideoCapture::open函数可以从文件获取视频
+    cap.open(filepath)
+    # 获取视频帧数
+    n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    file_name = os.path.basename(filepath)
+    try:
+        for i in range(n_frames):
+            ret, frame = cap.read()
+            # 每隔frame_interval帧进行一次截屏操作
+            if i % frame_interval == 0:
+                imagename = '{}/{}_{:0>6d}.{}'.format(save_path, file_name, i, pic_format)
+                cv2.imwrite(imagename, frame)
+    except Exception as e:
+        print(e)
+        raise
+    finally:
+        # 执行结束释放资源
+        cap.release()
+
+
+
+def stop_executing_task(self):
+    print('stop_executing_task')
+    if not self.execute_flag:
+        return
+    self.execute_flag = False
 
 
 if __name__ == '__main__':

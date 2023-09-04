@@ -217,11 +217,11 @@ def find_image_with_exif(path, reverse=False):
                     if not image.has_exif:
                         print(f)
             except Exception as e:
-                print(f'图片非支持exif格式：{f}')
+                print(f'不支持格式：{f}')
 
 
 if __name__ == '__main__':
     # convert_image(r'D:\DupPhoto\iCloud1\iCloud1\IMG_0766.JPEG', '111')
     # resize_image(r'D:\DupPhoto\iCloud1\iCloud1\IMG_0336.JPG')
     # rotate_image(r'D:\DupPhoto\iCloud1\iCloud1\IMG_0336.JPG', '0', output_path=r'D:\DupPhoto\same')
-    find_image_with_exif(r'E:\Users\admin\Documents\Tencent Files\844702117\FileRecv\MobileFile', )
+    find_image_with_exif(r'D:\DupPhoto\iCloud4\iCloud4', )

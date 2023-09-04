@@ -39,5 +39,5 @@ def show_image_hist(file_path1, file_path2):  # 画三通道图像的直方图
 
 
 if __name__ == '__main__':
-    show_image_hist(r'D:\DupPhoto\same\t01f5c3c8480a14d20a.jpg', r'D:\DupPhoto\same\t01f5c3c8480a14d20a(small).jpg')
+    show_image_hist(r'F:\ss\DSC00832.JPG', r'F:\ss\DSC00833.JPG')
     # main(r'D:\DupPhoto\STScI-01GA6K5N0X9R63BK72VXVHBTVM.jpg')

@@ -1,6 +1,7 @@
 import os
 import random
 import shutil
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from faker import Faker
@@ -51,7 +52,12 @@ def gen_file_names(file_count, extension, filename, base_paths, dir_depth):
                 p = '/'.join(lst)
                 file_path = f'{p}/{filename}.{F.file_extension()}'
         else:
-            file_path = F.file_path(depth=depth, extension=extension)
+            if depth == -1:
+                file_path = str(int(time.time() * 1000)) + '_' + F.file_path(depth=depth, extension=extension)
+                file_path = '/' + file_path.replace('/', '')
+                # print(file_path)
+            else:
+                file_path = F.file_path(depth=depth, extension=extension)
             if filename:
                 lst = file_path.split('/')
                 lst.pop()
@@ -183,6 +189,8 @@ def copy_file(abs_filename,
 
     return files
 
-# if __name__ == '__main__':
-# create_duplicate_files(4, 104857500, extension='random')
+
+if __name__ == '__main__':
+    for _ in range(50):
+        create_duplicate_files(5, 1048575, base_paths=r'F:\TEST', extension='test', dir_depth=-1)
 # create_same_head_files(2/, 1048, 104, extension='random')

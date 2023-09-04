@@ -1,5 +1,6 @@
 import imghdr
 import pathlib
+from typing import Iterable, List, Union
 
 import cv2
 import numpy
@@ -28,7 +29,7 @@ def pretty_blur_map(blur_map: numpy.array, sigma: int = 5, min_abs: float = 0.5)
     return cv2.medianBlur(abs_image, sigma)
 
 
-def find_images(image_paths):
+def find_images(image_paths: List[Union[str, pathlib.Path]]):
     for path in image_paths:
         if not isinstance(path, pathlib.Path):
             path = pathlib.Path(path)

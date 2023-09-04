@@ -696,7 +696,7 @@ class PictureTransformUI:
     def __init__(self, master):
         Label(master, text="图片路径：").grid(row=16)
         Label(master, text="保存路径：").grid(row=18)
-        Label(master, text="变换方式").grid(row=20)
+        Label(master, text="变换方式：").grid(row=20)
         # Label(master, text="图片格式：").grid(row=22)
         # Label(master, text="是否修改文件名：").grid(row=24)
 
@@ -822,7 +822,7 @@ class HistCompareUI:
     def __init__(self, master):
         Label(master, text="基准图片路径：").grid(row=16)
         Label(master, text="待对比图片路径：").grid(row=18)
-        Label(master, text="说明").grid(row=20)
+        Label(master, text="说明：").grid(row=20)
         # Label(master, text="图片格式：").grid(row=22)
         # Label(master, text="是否修改文件名：").grid(row=24)
 
@@ -912,7 +912,7 @@ class ShowHistUI:
     def __init__(self, master):
         Label(master, text="图片1：").grid(row=16)
         Label(master, text="图片2：").grid(row=18)
-        Label(master, text="说明").grid(row=20)
+        Label(master, text="说明：").grid(row=20)
         # Label(master, text="图片格式：").grid(row=22)
         # Label(master, text="是否修改文件名：").grid(row=24)
 
